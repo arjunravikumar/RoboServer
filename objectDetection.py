@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
 net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.5)
-camera = jetson.utils.videoSource("http://192.168.1.166:5000/video_feed")      # '/dev/video0' for V4L2
+camera = jetson.utils.videoSource("rtsp://192.168.1.166:8554/unicast")      # '/dev/video0' for V4L2
 display = jetson.utils.videoOutput("file://detectionImg.jpg",true) # 'my_video.mp4' for file
 
 def gen():
