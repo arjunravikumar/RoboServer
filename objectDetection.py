@@ -12,16 +12,16 @@ camera = jetson.utils.videoSource("http://192.168.1.166:5000/video_feed")      #
 display = jetson.utils.videoOutput("file://detectionImg.jpg",true) # 'my_video.mp4' for file
 
 def gen():
-	while True:
-		img = camera.Capture()
-		detections = net.Detect(img)
-		for detection in detections:
-			print(detection)
-		display.Render(img)
-		display.SetStatus("Object Detection | Network {:.0f} FPS".format(net.GetNetworkFPS()))
-		imgOut = jetson.utils.cudaToNumpy(img)
-		yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + imgOut + b'\r\n')
+# 	while True:
+    img = camera.Capture()
+    detections = net.Detect(img)
+    for detection in detections:
+        print(detection)
+    display.Render(img)
+    display.SetStatus("Object Detection | Network {:.0f} FPS".format(net.GetNetworkFPS()))
+    imgOut = jetson.utils.cudaToNumpy(img)
+    yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + imgOut + b'\r\n')
 
 @app.route('/video_feed')
 def video_feed():
