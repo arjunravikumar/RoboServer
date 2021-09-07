@@ -1,21 +1,14 @@
 <!DOCTYPE html>
 
 <html>
-   <head>
-      <title>Object detection</title>
-      <script type = "text/javascript">
-         
-          function displayImage() {
-              var d = new Date();
-              var n = d.getTime();
-              var m = d.getMilliseconds();
-              document.getElementById("img").src = image+".jpg?time="+n+"m"+m;
-          }
-          var image = "detectionImg";
-      </script>
-   </head>
-
-   <body onload = "startTimer()">
-       <img id="img" src="detectionImg.jpg" height:100%/>
+   <body>
+   <div class="container">
+       <div class="row">
+           <div class="col-lg-8  offset-lg-2">
+               <h3 class="mt-5">Live Streaming</h3>
+               <img src="detectionImg.jpg" width="100%">
+           </div>
+       </div>
+   </div>
    </body>
 </html>
