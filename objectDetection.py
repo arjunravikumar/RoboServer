@@ -27,3 +27,5 @@ def video_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""
     return Response(gen(camera),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+
+app.run(host='0.0.0.0', threaded=True)
