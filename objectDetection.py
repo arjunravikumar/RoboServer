@@ -28,4 +28,4 @@ def video_feed():
     return Response(gen(camera),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-app.run(host='0.0.0.0', threaded=True)
+app.run(debug=True)
