@@ -20,12 +20,17 @@ def gen():
 		display.Render(img)
 		display.SetStatus("Object Detection | Network {:.0f} FPS".format(net.GetNetworkFPS()))
 		imgOut = jetson.utils.cudaToNumpy(img)
-		yeild(imgOut)
+		yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + imgOut + b'\r\n')
 
 @app.route('/video_feed')
 def video_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""
     return Response(gen(camera),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 app.run(debug=True)
