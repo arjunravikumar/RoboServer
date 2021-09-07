@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<html>
+   <head>
+      <title>Object detection</title>
+      <script type = "text/javascript">
+         
+          function displayImage() {
+              var d = new Date();
+              var n = d.getTime();
+              var m = d.getMilliseconds();
+              document.getElementById("img").src = image+".jpg?time="+n+"m"+m;
+          }
+          var image = "detectionImg";
+      </script>
+   </head>
+
+   <body onload = "startTimer()">
+       <img id="img" src="detectionImg.jpg" height:100%/>
+   </body>
+</html>
