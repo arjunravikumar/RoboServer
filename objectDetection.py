@@ -12,4 +12,3 @@ while True:
     for detection in detections:
         print(detection)
     display.Render(img)
-    print("FPS: ",net.GetNetworkFPS())
