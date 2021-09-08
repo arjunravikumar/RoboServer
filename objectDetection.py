@@ -12,7 +12,4 @@ while True:
     for detection in detections:
         print(detection)
     display.Render(img)
-    display.SetStatus("Object Detection | Network {:.0f} FPS".format(net.GetNetworkFPS()))
-    imgOut = jetson.utils.cudaToNumpy(img)
-    if not camera.IsStreaming() or not display.IsStreaming():
-        break
+    print("FPS: ",net.GetNetworkFPS())
