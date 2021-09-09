@@ -16,7 +16,8 @@ def gen_frames():
         detections = net.Detect(img)
         for detection in detections:
             print(detection)
-        ret, buffer = cv2.imencode('.jpg', img)
+        img_array = jetson.utils.cudaToNumpy(img)
+        ret, buffer = cv2.imencode('.jpg', img_array)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
