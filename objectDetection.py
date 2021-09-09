@@ -31,4 +31,4 @@ def video_feed():
     print("here1")
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-app.run(debug=True)
+app.run("0.0.0.0",port="8000",debug=True)
