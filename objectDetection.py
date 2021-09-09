@@ -11,7 +11,6 @@ camera = jetson.utils.videoSource("rtsp://192.168.1.166:8554/unicast")
 
 def gen_frames():
     while True:
-        print("here2")
         img = camera.Capture()
         detections = net.Detect(img)
         for detection in detections:
@@ -24,12 +23,10 @@ def gen_frames():
 
 @app.route('/')
 def index():
-    print("here0")
     return render_template('index.html')
 
 @app.route('/video_feed')
 def video_feed():
-    print("here1")
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 app.run("0.0.0.0",port="8000",debug=True)
