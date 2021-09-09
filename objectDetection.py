@@ -31,5 +31,4 @@ def video_feed():
     print("here1")
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-if __name__ == "__main__":
-    app.run(debug=True)
+app.run(debug=True)
