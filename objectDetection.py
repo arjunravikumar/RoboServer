@@ -16,14 +16,14 @@ def gen_frames():
         for detection in detections:
             print(detection)
         img_array = jetson.utils.cudaToNumpy(img)
-        ret, buffer = cv2.imencode('.jpg', img_array)
-        frame = buffer.tobytes()
         font                   = cv2.FONT_HERSHEY_SIMPLEX
         bottomLeftCornerOfText = (10,600)
         fontScale              = 1
         fontColor              = (255,255,255)
         lineType               = 2
-        cv2.putText(img,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
+        cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
+        ret, buffer = cv2.imencode('.jpg', img_array)
+        frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
 
