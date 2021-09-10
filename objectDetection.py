@@ -13,6 +13,7 @@ mot_tracker = Sort()
 
 def gen_frames():
     while True:
+        print("here")
         img = camera.Capture()
         detections = net.Detect(img)
         detectionsForImageTracking = []
