@@ -18,8 +18,8 @@ def gen_frames():
         detections = net.Detect(img)
         detectionsForImageTracking = []
         for detection in detections:
-            detectedObjInImg = np.array([detection.Left,detection.Bottom,detection.Right,detection.Top,detection.ClassID])
-            detectionsForImageTracking.append(detectedObjInImg)
+            detectionsForImageTracking.append(np.array([detection.Left,\
+            detection.Bottom,detection.Right,detection.Top,detection.ClassID]))
         if(len(detectionsForImageTracking) > 0):
             detectionsForImageTracking = np.array(detectionsForImageTracking)
             tracked_objects = mot_tracker.update(detectionsForImageTracking)
