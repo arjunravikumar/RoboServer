@@ -77,8 +77,8 @@ def getFrames(conditionObj):
     global frame
     while True:
         conditionObj.wait()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
+        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
 @app.route('/')
 def index():
     return render_template('index.html')
