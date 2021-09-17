@@ -2,6 +2,7 @@ import jetson.inference
 import jetson.utils
 import cv2
 from flask import Flask, render_template, Response
+import numpy as np
 
 app = Flask(__name__)
 
