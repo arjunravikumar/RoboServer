@@ -1,7 +1,5 @@
 import jetson.inference
 import jetson.utils
-import os
-os.environ['OPENCV_IO_MAX_IMAGE_PIXELS']=str(2**64)
 import cv2
 from flask import Flask, render_template, Response
 import numpy as np
@@ -50,7 +48,7 @@ def gen_frames():
                 print(detection)
                 if(detection.ClassID == 1):
                     detection = detections[0]
-                    print(detection.Left,detection.Bottom,detection.Width,detection.Height)
+                    print(detection.Left+detection.Width,detection.Bottom+detection.Height)
                     bbox = [detection.Left,detection.Bottom,detection.Width,detection.Height]
                     ok = tracker.init(img_array, bbox)
                     objectFound = True
