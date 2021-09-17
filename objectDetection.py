@@ -37,7 +37,6 @@ def createTracker(trackerType):
 def gen_frames(toDetect,conditionObj):
     global tracker
     global frame
-    global conditionObj
     objectFound = False
     font                   = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (10,650)
