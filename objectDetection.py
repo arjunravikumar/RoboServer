@@ -8,24 +8,55 @@ app = Flask(__name__)
 
 net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.5)
 camera = jetson.utils.videoSource("rtsp://192.168.1.166:8554/unicast")
+tracker = None
 
+def createTracker(tracker_type):
+    global tracker
+    if tracker_type == 'BOOSTING':
+        tracker = cv2.TrackerBoosting_create()
+    if tracker_type == 'MIL':
+        tracker = cv2.TrackerMIL_create()
+    if tracker_type == 'KCF':
+        tracker = cv2.TrackerKCF_create()
+    if tracker_type == 'TLD':
+        tracker = cv2.TrackerTLD_create()
+    if tracker_type == 'MEDIANFLOW':
+        tracker = cv2.TrackerMedianFlow_create()
+    if tracker_type == 'GOTURN':
+        tracker = cv2.TrackerGOTURN_create()
+    if tracker_type == 'MOSSE':
+        tracker = cv2.TrackerMOSSE_create()
+    if tracker_type == "CSRT":
+        tracker = cv2.TrackerCSRT_create()
 
 def gen_frames():
+    global tracker
+    objectFound = False
+    font                   = cv2.FONT_HERSHEY_SIMPLEX
+    bottomLeftCornerOfText = (10,800)
+    fontScale              = 0.25
+    fontColor              = (255,255,255)
+    lineType               = 2
     while True:
         img = camera.Capture()
         detections = net.Detect(img)
         detectionsForImageTracking = []
-        for detection in detections:
-            detectionsForImageTracking.append(np.array([detection.Left,\
-            detection.Bottom,detection.Right,detection.Top,detection.ClassID]))
-        if(len(detectionsForImageTracking) > 0):
-            print("here")
         img_array = jetson.utils.cudaToNumpy(img)
-        font                   = cv2.FONT_HERSHEY_SIMPLEX
-        bottomLeftCornerOfText = (10,600)
-        fontScale              = 1
-        fontColor              = (255,255,255)
-        lineType               = 2
+        for i in range(len(detections)):
+            print(len(detections))
+        if(len(detectionsForImageTracking) > 0):
+            if(objectFound == False):
+                detection = detections[0]
+                bbox = [detection.Left,detection.Bottom,detection.Right,detection.Top]
+                ok = tracker.init(img_array, bbox)
+            ok, bbox = tracker.update(img_array)
+            if ok:
+                p1 = (int(bbox[0]), int(bbox[1]))
+                p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
+                cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
+                else :
+                    cv2.putText(img_array, "Tracking failure detected", (100,80), font, 0.75,(0,0,255),2)
+                cv2.putText(img_array, tracker_type + " Tracker", (100,20), font, 0.75, (50,170,50),2)
         cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
         ret, buffer = cv2.imencode('.jpg', img_array)
         frame = buffer.tobytes()
@@ -40,4 +71,5 @@ def index():
 def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+createTracker('BOOSTING')
 app.run("0.0.0.0",port="8000",debug=True)
