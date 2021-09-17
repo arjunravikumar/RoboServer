@@ -33,7 +33,7 @@ def gen_frames():
     global tracker
     objectFound = False
     font                   = cv2.FONT_HERSHEY_SIMPLEX
-    bottomLeftCornerOfText = (10,800)
+    bottomLeftCornerOfText = (10,650)
     fontScale              = 0.25
     fontColor              = (255,255,255)
     lineType               = 2
@@ -49,6 +49,7 @@ def gen_frames():
                 detection = detections[0]
                 bbox = [detection.Left,detection.Bottom,detection.Right,detection.Top]
                 ok = tracker.init(img_array, bbox)
+                objectFound = True
             ok, bbox = tracker.update(img_array)
             if ok:
                 p1 = (int(bbox[0]), int(bbox[1]))
