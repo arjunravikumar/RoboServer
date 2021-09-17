@@ -85,7 +85,7 @@ def index():
 
 @app.route('/video_feed')
 def video_feed():
-    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(getFrames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 def initalisePreProcessingProcedure():
     global labelClasses
