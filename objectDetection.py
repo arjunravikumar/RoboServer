@@ -33,7 +33,7 @@ def createTracker(trackerType):
     if trackerType == "CSRT":
         tracker = cv2.legacy.TrackerCSRT_create()
 
-def gen_frames(toDetect,conditionObj):
+def gen_frames(toDetect):
     global tracker
     global frame
     global conditionObj
