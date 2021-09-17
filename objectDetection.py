@@ -42,11 +42,10 @@ def gen_frames():
         detections = net.Detect(img)
         detectionsForImageTracking = []
         img_array = jetson.utils.cudaToNumpy(img)
-        for i in range(len(detections)):
-            print(len(detections))
-        if(len(detections) > 0):
-            if(objectFound == False):
+        for detections in range(len(detections)):
+            if(objectFound == False and detections.label == 1):
                 detection = detections[0]
+                print(detection.Left,detection.Bottom,detection.Right,detection.Top,detection.label)
                 bbox = [detection.Left,detection.Bottom,detection.Right,detection.Top]
                 ok = tracker.init(img_array, bbox)
                 objectFound = True
