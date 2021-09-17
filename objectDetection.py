@@ -44,7 +44,7 @@ def gen_frames():
         img_array = jetson.utils.cudaToNumpy(img)
         for i in range(len(detections)):
             print(len(detections))
-        if(len(detectionsForImageTracking) > 0):
+        if(len(detections) > 0):
             if(objectFound == False):
                 detection = detections[0]
                 bbox = [detection.Left,detection.Bottom,detection.Right,detection.Top]
