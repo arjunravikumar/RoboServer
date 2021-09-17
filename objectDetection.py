@@ -13,21 +13,21 @@ tracker = None
 def createTracker(tracker_type):
     global tracker
     if tracker_type == 'BOOSTING':
-        tracker = cv2.TrackerBoosting_create()
+        tracker = cv2.legacy.TrackerBoosting_create()
     if tracker_type == 'MIL':
-        tracker = cv2.TrackerMIL_create()
+        tracker = cv2.legacy.TrackerMIL_create()
     if tracker_type == 'KCF':
-        tracker = cv2.TrackerKCF_create()
+        tracker = cv2.legacy.TrackerKCF_create()
     if tracker_type == 'TLD':
-        tracker = cv2.TrackerTLD_create()
+        tracker = cv2.legacy.TrackerTLD_create()
     if tracker_type == 'MEDIANFLOW':
-        tracker = cv2.TrackerMedianFlow_create()
+        tracker = cv2.legacy.TrackerMedianFlow_create()
     if tracker_type == 'GOTURN':
-        tracker = cv2.TrackerGOTURN_create()
+        tracker = cv2.legacy.TrackerGOTURN_create()
     if tracker_type == 'MOSSE':
-        tracker = cv2.TrackerMOSSE_create()
+        tracker = cv2.legacy.TrackerMOSSE_create()
     if tracker_type == "CSRT":
-        tracker = cv2.TrackerCSRT_create()
+        tracker = cv2.legacy.TrackerCSRT_create()
 
 def gen_frames():
     global tracker
