@@ -1,5 +1,7 @@
 import jetson.inference
 import jetson.utils
+import os
+os.environ['OPENCV_IO_MAX_IMAGE_PIXELS']=str(2**64)
 import cv2
 from flask import Flask, render_template, Response
 import numpy as np
