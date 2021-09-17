@@ -58,16 +58,17 @@ def gen_frames(toDetect):
                     boundingBox = [int(detection.Left),int(detection.Top),int(detection.Width),int(detection.Height)]
                     ok = tracker.init(img_array, boundingBox)
                     objectFound = True
-        ok, boundingBox = tracker.update(img_array)
-        if ok:
-            p1 = (int(boundingBox[0]), int(boundingBox[1]))
-            p2 = (int(boundingBox[0] + boundingBox[2]), int(boundingBox[1] + boundingBox[3]))
-            cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
-        else :
-            cv2.putText(img_array, toDetect + "Not Visible in Vision", (20,20), font, 0.50,(0,0,255),2)
-            objectFound = False
-        cv2.putText(img_array, "Tracking "+ toDetect , (20,80), font, 0.50, (50,170,50),2)
-        cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
+            cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
+        else:
+            ok, boundingBox = tracker.update(img_array)
+            if ok:
+                p1 = (int(boundingBox[0]), int(boundingBox[1]))
+                p2 = (int(boundingBox[0] + boundingBox[2]), int(boundingBox[1] + boundingBox[3]))
+                cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
+            else :
+                cv2.putText(img_array, toDetect + "Not Visible in Vision", (20,20), font, 0.50,(0,0,255),2)
+                objectFound = False
+            cv2.putText(img_array, "Tracking "+ toDetect , (20,80), font, 0.50, (50,170,50),2)
         ret, buffer = cv2.imencode('.jpg', img_array)
         frame = buffer.tobytes()
         with conditionObj:
@@ -99,7 +100,7 @@ def initalisePreProcessingProcedure():
         labelClasses = {}
         for line in lines:
             classVals = line.replace("\n","").split("\t")
-            labelClasses[classVals[0]] = {"className": classVals[1],"classCategory": classVals[4]}
+            labelClasses[int(classVals[0])] = {"className": classVals[1],"classCategory": classVals[4]}
 
 def startWebServer():
     app.run("0.0.0.0",port="8000",debug=True)
