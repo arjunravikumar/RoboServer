@@ -43,6 +43,7 @@ def gen_frames():
         detectionsForImageTracking = []
         img_array = jetson.utils.cudaToNumpy(img)
         for detection in detections:
+            print(detection.label)
             if(objectFound == False and detection.label == 1):
                 detection = detections[0]
                 print(detection.Left,detection.Bottom,detection.Right,detection.Top,detection.label)
