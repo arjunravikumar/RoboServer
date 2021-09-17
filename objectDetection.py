@@ -48,8 +48,8 @@ def gen_frames():
                 print(detection)
                 if(detection.ClassID == 1):
                     detection = detections[0]
-                    print(detection.Left+detection.Width,detection.Bottom+detection.Height)
-                    bbox = [int(detection.Left),int(detection.Bottom),int(detection.Width),int(detection.Height)]
+                    print(detection.Left+detection.Width,detection.Top+detection.Height)
+                    bbox = [int(detection.Left),int(detection.Top),int(detection.Width),int(detection.Height)]
                     ok = tracker.init(img_array, bbox)
                     objectFound = True
         ok, bbox = tracker.update(img_array)
