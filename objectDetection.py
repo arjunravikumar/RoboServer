@@ -43,21 +43,21 @@ def gen_frames():
         detectionsForImageTracking = []
         img_array = jetson.utils.cudaToNumpy(img)
         for detection in detections:
-            print(detection.label)
-            if(objectFound == False and detection.label == 1):
-                detection = detections[0]
-                print(detection.Left,detection.Bottom,detection.Right,detection.Top,detection.label)
-                bbox = [detection.Left,detection.Bottom,detection.Right,detection.Top]
-                ok = tracker.init(img_array, bbox)
-                objectFound = True
-            ok, bbox = tracker.update(img_array)
-            if ok:
-                p1 = (int(bbox[0]), int(bbox[1]))
-                p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
-                cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
-            else :
-                cv2.putText(img_array, "Tracking failure detected", (100,80), font, 0.75,(0,0,255),2)
-            cv2.putText(img_array, tracker_type + " Tracker", (100,20), font, 0.75, (50,170,50),2)
+            print(detection)
+#             if(objectFound == False and detection.label == 1):
+#                 detection = detections[0]
+#                 print(detection.Left,detection.Bottom,detection.Right,detection.Top,detection.label)
+#                 bbox = [detection.Left,detection.Bottom,detection.Right,detection.Top]
+#                 ok = tracker.init(img_array, bbox)
+#                 objectFound = True
+#             ok, bbox = tracker.update(img_array)
+#             if ok:
+#                 p1 = (int(bbox[0]), int(bbox[1]))
+#                 p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
+#                 cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
+#             else :
+#                 cv2.putText(img_array, "Tracking failure detected", (100,80), font, 0.75,(0,0,255),2)
+#             cv2.putText(img_array, tracker_type + " Tracker", (100,20), font, 0.75, (50,170,50),2)
         cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
         ret, buffer = cv2.imencode('.jpg', img_array)
         frame = buffer.tobytes()
