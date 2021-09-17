@@ -64,9 +64,9 @@ def gen_frames(toDetect,conditionObj):
             p2 = (int(boundingBox[0] + boundingBox[2]), int(boundingBox[1] + boundingBox[3]))
             cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
         else :
-            cv2.putText(img_array, labelClasses[detection.ClassID]["className"] + "Not Visible in Vision", (20,20), font, 0.50,(0,0,255),2)
+            cv2.putText(img_array, toDetect + "Not Visible in Vision", (20,20), font, 0.50,(0,0,255),2)
             objectFound = False
-        cv2.putText(img_array, "Tracking "+ labelClasses[detection.ClassID]["className"] , (20,80), font, 0.50, (50,170,50),2)
+        cv2.putText(img_array, "Tracking "+ toDetect , (20,80), font, 0.50, (50,170,50),2)
         cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
         ret, buffer = cv2.imencode('.jpg', img_array)
         frame = buffer.tobytes()
