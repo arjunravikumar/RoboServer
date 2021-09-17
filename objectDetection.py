@@ -34,7 +34,7 @@ def gen_frames():
     objectFound = False
     font                   = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (10,650)
-    fontScale              = 0.25
+    fontScale              = 0.5
     fontColor              = (255,255,255)
     lineType               = 2
     while True:
