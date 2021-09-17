@@ -12,7 +12,7 @@ net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.5)
 camera = jetson.utils.videoSource("rtsp://192.168.1.166:8554/unicast")
 tracker = None
 labelClasses = {}
-toDetect = "MIL"
+toDetect = "person"
 frame = None
 
 def createTracker(trackerType):
@@ -34,11 +34,10 @@ def createTracker(trackerType):
     if trackerType == "CSRT":
         tracker = cv2.legacy.TrackerCSRT_create()
 
-def gen_frames():
+def gen_frames(toDetect,conditionObj):
     global tracker
     global frame
     global conditionObj
-    global toDetect
     objectFound = False
     font                   = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (10,650)
@@ -74,9 +73,8 @@ def gen_frames():
         frame = buffer.tobytes()
         conditionObj.notifyAll()
 
-def getFrames():
+def getFrames(conditionObj):
     global frame
-    global conditionObj
     while True:
         conditionObj.wait()
         yield (b'--frame\r\n'
@@ -104,10 +102,9 @@ def startWebServer():
 
 initalisePreProcessingProcedure()
 conditionObj = threading.Condition()
-gen_frames(toDetect)
 
-generateFrames = threading.Thread(target=gen_frames, name='generateFrames')
-webServer = threading.Thread(target=startWebServer, name='webServer')
+generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=(toDetect,conditionObj,)
+webServer = threading.Thread(target=startWebServer, name='webServer',args=(conditionObj,)
 
 generateFrames.join()
 webServer.join()
