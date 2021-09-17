@@ -105,5 +105,8 @@ conditionObj = threading.Condition()
 generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=(toDetect,conditionObj,))
 webServer = threading.Thread(target=startWebServer, name='webServer',args=(conditionObj,))
 
+generateFrames.start()
+webServer.start()
+
 generateFrames.join()
 webServer.join()
