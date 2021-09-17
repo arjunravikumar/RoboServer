@@ -70,14 +70,16 @@ def gen_frames(toDetect):
         cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
         ret, buffer = cv2.imencode('.jpg', img_array)
         frame = buffer.tobytes()
-        conditionObj.notifyAll()
+        with conditionObj:
+            conditionObj.notifyAll()
 
 def getFrames():
     global frame
     global conditionObj
     while True:
-        conditionObj.wait()
-        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        with conditionObj:
+            conditionObj.wait()
+            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 @app.route('/')
 def index():
