@@ -6,6 +6,7 @@ import numpy as np
 import threading
 import time
 from RoboControls import *
+import sys
 
 app = Flask(__name__)
 
@@ -17,7 +18,7 @@ frame = None
 robotControls = None
 screenWidth = 1280
 screenHeight = 720
-GUIMode = True
+GUIMode = False
 
 def createTracker(trackerType):
     global tracker
@@ -42,6 +43,7 @@ def gen_frames(toDetect):
     global tracker
     global frame
     global conditionObj
+    global GUIMode
     objectFound            = False
     font                   = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (10,650)
@@ -124,6 +126,8 @@ def initalisePreProcessingProcedure():
 def startWebServer():
     app.run("0.0.0.0",port="8000",debug=True)
 
+if(sys.argv[1] == "False"):
+    GUIMode = False
 initalisePreProcessingProcedure()
 conditionObj = threading.Condition()
 
