@@ -27,3 +27,9 @@ class RoboControls:
 
     def on_open(self,ws):
         self.ws.send("tumbler:wakeup")
+
+    def move(direction,speed):
+        self.ws.send(direction)
+
+    def stopMovement():
+        self.ws.send("DS")
