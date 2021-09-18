@@ -15,6 +15,8 @@ tracker = None
 labelClasses = {}
 frame = None
 robotControls = None
+screenWidth = 1280
+screenHeight = 720
 
 def createTracker(trackerType):
     global tracker
@@ -39,36 +41,48 @@ def gen_frames(toDetect):
     global tracker
     global frame
     global conditionObj
-    objectFound = False
+    objectFound            = False
     font                   = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (10,650)
     fontScale              = 0.5
     fontColor              = (255,255,255)
     lineType               = 2
+    targetLocked           = False
     while True:
         img = camera.Capture()
         img_array = jetson.utils.cudaToNumpy(img)
-        if(objectFound == False):
-            detections = net.Detect(img)
-            detectionsForImageTracking = []
-            img_array = jetson.utils.cudaToNumpy(img)
-            for detection in detections:
-                print(detection)
-                if(labelClasses[detection.ClassID]["className"] == toDetect):
-                    boundingBox = [int(detection.Left),int(detection.Top),int(detection.Width),int(detection.Height)]
-                    ok = tracker.init(img_array, boundingBox)
-                    objectFound = True
-            cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
+        detections = net.Detect(img)
+        detectionsForImageTracking = []
+        img_array = jetson.utils.cudaToNumpy(img)
+        for detection in detections:
+            print(detection)
+            if(labelClasses[detection.ClassID]["className"] == toDetect):
+                objectFound = True
+                bBoxDetect = [int(detection.Left),int(detection.Top),int(detection.Width),int(detection.Height)]
+                break
+        cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
+        if(objectFound == True and targetLocked == False ):
+            ok = tracker.init(img_array, bBoxDetect)
+            targetLocked = True
         else:
-            ok, boundingBox = tracker.update(img_array)
+            targetLocked = False
+        if(targetLocked == True):
+            ok, bBoxTrack = tracker.update(img_array)
             if ok:
-                p1 = (int(boundingBox[0]), int(boundingBox[1]))
-                p2 = (int(boundingBox[0] + boundingBox[2]), int(boundingBox[1] + boundingBox[3]))
-                cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
+                totalDiff = 0
+                for coord in range(4):
+                    totalDiff += abs(bBoxTrack[coord] - bBoxDetect[coord])
+                if(totalDiff > 30):
+                    targetLocked = False
+                    cv2.putText(img_array, "Tracking not matching detect", (20,20), font, 0.50,(0,0,255),2)
+                else:
+                    p1 = (int(bBoxTrack[0]), int(bBoxTrack[1]))
+                    p2 = (int(bBoxTrack[0] + bBoxTrack[2]), int(bBoxTrack[1] + bBoxTrack[3]))
+                    cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
+                    cv2.putText(img_array, "Tracking "+ toDetect , (20,80), font, 0.50, (50,170,50),2)
             else :
                 cv2.putText(img_array, toDetect + "Not Visible in Vision", (20,20), font, 0.50,(0,0,255),2)
-                objectFound = False
-            cv2.putText(img_array, "Tracking "+ toDetect , (20,80), font, 0.50, (50,170,50),2)
+                targetLocked = False
         ret, buffer = cv2.imencode('.jpg', img_array)
         frame = buffer.tobytes()
         print(net.GetNetworkFPS(), end='\r')
@@ -94,7 +108,7 @@ def video_feed():
 def initalisePreProcessingProcedure():
     global labelClasses
     global robotControls
-    createTracker('BOOSTING')
+    createTracker('KCF')
     with open('label.txt','r') as f:
         lines = f.readlines()
         labelClasses = {}
