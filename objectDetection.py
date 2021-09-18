@@ -110,5 +110,5 @@ conditionObj = threading.Condition()
 generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
 generateFrames.start()
 
-startWebServer()
+# startWebServer()
 generateFrames.join()
