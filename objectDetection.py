@@ -58,7 +58,7 @@ def trackObject(img_array,toDetect):
             cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
             cv2.putText(img_array, "Tracking "+ toDetect , (20,80), font, 0.50, (50,170,50),2)
         else :
-            cv2.putText(img_array, toDetect + "Not Visible in Vision", (20,20), font, 0.50,(0,0,255),2)
+            cv2.putText(img_array, toDetect + "Not Visible in Vision", (20,20), cv2.FONT_HERSHEY_SIMPLEX, 0.50,(0,0,255),2)
     return bBoxTrack,img_array
 
 def gen_frames(toDetect):
@@ -68,11 +68,6 @@ def gen_frames(toDetect):
     global camera
     global tracker
     objectFound            = False
-    font                   = cv2.FONT_HERSHEY_SIMPLEX
-    bottomLeftCornerOfText = (10,650)
-    fontScale              = 0.5
-    fontColor              = (255,255,255)
-    lineType               = 2
     resetTracking          = True
     frameCount = 0
     while True:
@@ -89,7 +84,8 @@ def gen_frames(toDetect):
         if(objectFound):
             bBoxTrack,img_array = trackObject(img_array,toDetect)
         if(GUIMode):
-            cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
+            cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
+            cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
             ret, buffer = cv2.imencode('.jpg', img_array)
             frame = buffer.tobytes()
             with conditionObj:
