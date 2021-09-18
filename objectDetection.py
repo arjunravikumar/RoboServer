@@ -92,8 +92,8 @@ def gen_frames(toDetect):
         img_array = jetson.utils.cudaToNumpy(img)
         if(resetTracking and objectFound):
             printStatus("Reset Initiated")
-            resetTracking = False
             tracker.init(img_array, bBoxDetect)
+            resetTracking = False
         if(objectFound):
             printStatus("Tracking Object")
             objectFound, bBoxTrack,img_array = trackObject(img_array,toDetect)
