@@ -18,7 +18,7 @@ frame = None
 robotControls = None
 screenWidth = 1280
 screenHeight = 720
-GUIMode = False
+GUIMode = True
 
 def createTracker(trackerType):
     global tracker
