@@ -91,11 +91,12 @@ def gen_frames(toDetect):
         img_array = jetson.utils.cudaToNumpy(img)
         if(resetTracking and objectFound):
             printStatus("Reset Initiated")
-            tracker.init(img_array, bBoxDetect)
             resetTracking = False
+            tracker.init(img_array, bBoxDetect)
         if(objectFound):
             printStatus("Tracking Object")
             objectFound, bBoxTrack,img_array = trackObject(img_array,toDetect)
+            objectFound = True
             printStatus("Object Status"+str(objectFound))
         if(GUIMode):
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
