@@ -6,6 +6,7 @@ import numpy as np
 import threading
 import time
 from sort import *
+from RoboControls import *
 
 app = Flask(__name__)
 
@@ -15,6 +16,7 @@ tracker = None
 labelClasses = {}
 frame = None
 mot_tracker = Sort()
+robotControls = None
 
 def createTracker(trackerType):
     global tracker
@@ -137,6 +139,7 @@ def video_feed():
 
 def initalisePreProcessingProcedure():
     global labelClasses
+    global robotControls
     createTracker('BOOSTING')
     with open('label.txt','r') as f:
         lines = f.readlines()
@@ -144,6 +147,7 @@ def initalisePreProcessingProcedure():
         for line in lines:
             classVals = line.replace("\n","").split("\t")
             labelClasses[int(classVals[0])] = {"className": classVals[1],"classCategory": classVals[4]}
+    robotControls = RoboControls()
 
 def startWebServer():
     app.run("0.0.0.0",port="8000",debug=True)
