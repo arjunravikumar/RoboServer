@@ -51,16 +51,22 @@ def getDesiredObjectFromFrame(toDetect,img):
 def trackObject(img_array,toDetect):
     global tracker
     ok, bBoxTrack = tracker.update(img_array)
+    objectInFrame = True
+    if ok:
+        objectInFrame = True
+    else:
+        objectInFrame = False
     if(GUIMode):
         if ok:
             p1 = (int(bBoxTrack[0]), int(bBoxTrack[1]))
             p2 = (int(bBoxTrack[0] + bBoxTrack[2]), int(bBoxTrack[1] + bBoxTrack[3]))
             cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
-            cv2.putText(img_array, "Tracking "+ toDetect , (20,80), cv2.FONT_HERSHEY_SIMPLEX, 0.50, (50,170,50),2)
+            cv2.putText(img_array, "Tracking "+ toDetect , (20,80), \
+            cv2.FONT_HERSHEY_SIMPLEX, 0.50, (50,170,50),2)
         else :
             cv2.putText(img_array, toDetect + "Not Visible in Vision", (20,20),\
              cv2.FONT_HERSHEY_SIMPLEX, 0.50,(0,0,255),2)
-    return bBoxTrack,img_array
+    return objectInFrame,bBoxTrack,img_array
 
 def gen_frames(toDetect):
     global frame
@@ -72,6 +78,7 @@ def gen_frames(toDetect):
     resetTracking          = True
     frameCount = 0
     while True:
+        print("objectFound :",objectFound," resetTracking : ",resetTracking)
         img = camera.Capture()
         if(frameCount%300 == 0 or objectFound == False):
             objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
@@ -83,7 +90,7 @@ def gen_frames(toDetect):
             tracker.init(img_array, bBoxDetect)
             resetTracking = False
         if(objectFound):
-            bBoxTrack,img_array = trackObject(img_array,toDetect)
+            objectFound, bBoxTrack,img_array = trackObject(img_array,toDetect)
         if(GUIMode):
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
             cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
