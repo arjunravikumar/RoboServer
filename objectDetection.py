@@ -106,7 +106,9 @@ def startWebServer():
 initalisePreProcessingProcedure()
 conditionObj = threading.Condition()
 
-generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
-generateFrames.start()
+# generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
+# generateFrames.start()
+
+gen_frames("person")
 startWebServer()
 generateFrames.join()
