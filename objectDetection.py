@@ -83,7 +83,7 @@ def gen_frames(toDetect):
             frameCount = 1
         frameCount += 1
         img_array = jetson.utils.cudaToNumpy(img)
-        if(resetTracking)
+        if(resetTracking):
             tracker.init(img_array, bBoxDetect)
             resetTracking = False
         if(objectFound):
