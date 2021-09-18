@@ -126,7 +126,7 @@ def initalisePreProcessingProcedure():
 def startWebServer():
     app.run("0.0.0.0",port="8000",debug=True)
 
-if(sys.argv[1] == "False"):
+if(len(sys.argv) > 1 and sys.argv[1] == "False"):
     GUIMode = False
 initalisePreProcessingProcedure()
 conditionObj = threading.Condition()
