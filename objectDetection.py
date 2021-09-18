@@ -71,15 +71,16 @@ def gen_frames(toDetect):
             cv2.putText(img_array, "Tracking "+ toDetect , (20,80), font, 0.50, (50,170,50),2)
         ret, buffer = cv2.imencode('.jpg', img_array)
         frame = buffer.tobytes()
-#         with conditionObj:
-#             conditionObj.notifyAll()
+        print(net.GetNetworkFPS())
+        with conditionObj:
+            conditionObj.notifyAll()
 
 def getFrames():
     global frame
     global conditionObj
     while True:
-#         with conditionObj:
-#             conditionObj.wait()
+        with conditionObj:
+            conditionObj.wait()
             yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 @app.route('/')
@@ -106,9 +107,8 @@ def startWebServer():
 initalisePreProcessingProcedure()
 conditionObj = threading.Condition()
 
-# generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
-# generateFrames.start()
+generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
+generateFrames.start()
 
-gen_frames("person")
 startWebServer()
 generateFrames.join()
