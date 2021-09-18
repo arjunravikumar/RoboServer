@@ -73,7 +73,7 @@ def gen_frames(toDetect):
                     totalDiff += abs(bBoxTrack[coord] - bBoxDetect[coord])
                 if(totalDiff > 30):
                     targetLocked = False
-                    if(GUIMode)
+                    if(GUIMode):
                         cv2.putText(img_array, "Tracking not matching detect", (20,20), font, 0.50,(0,0,255),2)
                 elif(GUIMode):
                     p1 = (int(bBoxTrack[0]), int(bBoxTrack[1]))
