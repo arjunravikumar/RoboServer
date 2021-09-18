@@ -71,7 +71,7 @@ def gen_frames(toDetect):
             cv2.putText(img_array, "Tracking "+ toDetect , (20,80), font, 0.50, (50,170,50),2)
         ret, buffer = cv2.imencode('.jpg', img_array)
         frame = buffer.tobytes()
-        print(net.GetNetworkFPS())
+        print(net.GetNetworkFPS(), end='\r')
         with conditionObj:
             conditionObj.notifyAll()
 
