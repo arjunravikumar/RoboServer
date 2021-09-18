@@ -39,53 +39,55 @@ def createTracker(trackerType):
     if trackerType == "CSRT":
         tracker = cv2.legacy.TrackerCSRT_create()
 
-def gen_frames(toDetect):
+def getDesiredObjectFromFrame(toDetect,img):
+    global net
+    detections = net.Detect(img)
+    for detection in detections:
+        if(labelClasses[detection.ClassID]["className"] == toDetect):
+            bbox = [int(detection.Left),int(detection.Top),int(detection.Width),int(detection.Height)]
+            return True, bbox, img
+    return False, None, img
+
+def trackObject(img_array):
     global tracker
+    ok, bBoxTrack = tracker.update(img_array)
+    if(GUIMode):
+        if ok:
+            p1 = (int(bBoxTrack[0]), int(bBoxTrack[1]))
+            p2 = (int(bBoxTrack[0] + bBoxTrack[2]), int(bBoxTrack[1] + bBoxTrack[3]))
+            cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
+            cv2.putText(img_array, "Tracking "+ toDetect , (20,80), font, 0.50, (50,170,50),2)
+        else :
+            cv2.putText(img_array, toDetect + "Not Visible in Vision", (20,20), font, 0.50,(0,0,255),2)
+    return bBoxTrack,img_array
+
+def gen_frames(toDetect):
     global frame
     global conditionObj
     global GUIMode
+    global camera
+    global tracker
     objectFound            = False
     font                   = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (10,650)
     fontScale              = 0.5
     fontColor              = (255,255,255)
     lineType               = 2
-    targetLocked           = False
+    resetTracking          = True
+    frameCount = 0
     while True:
         img = camera.Capture()
-        detections = net.Detect(img)
+        if(frameCount%300 == 0 or objectFound == False):
+            objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
+            resetTracking = True
+            frameCount = 1
+        frameCount += 1
         img_array = jetson.utils.cudaToNumpy(img)
-        for detection in detections:
-            if(GUIMode == False):
-                print(labelClasses[detection.ClassID]["className"], end='\r')
-            if(labelClasses[detection.ClassID]["className"] == toDetect):
-                objectFound = True
-                bBoxDetect = [int(detection.Left),int(detection.Top),int(detection.Width),int(detection.Height)]
-                break
-        if(objectFound == True and targetLocked == False ):
-            ok = tracker.init(img_array, bBoxDetect)
-            targetLocked = True
-        else:
-            targetLocked = False
-        if(targetLocked == True):
-            ok, bBoxTrack = tracker.update(img_array)
-            if ok:
-                totalDiff = 0
-                for coord in range(4):
-                    totalDiff += abs(bBoxTrack[coord] - bBoxDetect[coord])
-                if(totalDiff > 30):
-                    targetLocked = False
-                    if(GUIMode):
-                        cv2.putText(img_array, "Tracking not matching detect", (20,20), font, 0.50,(0,0,255),2)
-                elif(GUIMode):
-                    p1 = (int(bBoxTrack[0]), int(bBoxTrack[1]))
-                    p2 = (int(bBoxTrack[0] + bBoxTrack[2]), int(bBoxTrack[1] + bBoxTrack[3]))
-                    cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
-                    cv2.putText(img_array, "Tracking "+ toDetect , (20,80), font, 0.50, (50,170,50),2)
-            else :
-                if(GUIMode):
-                    cv2.putText(img_array, toDetect + "Not Visible in Vision", (20,20), font, 0.50,(0,0,255),2)
-                targetLocked = False
+        if(resetTracking)
+            tracker.init(img_array, bBoxDetect)
+            resetTracking = False
+        if(objectFound):
+            bBoxTrack,img_array = trackObject(img_array)
         if(GUIMode):
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
             ret, buffer = cv2.imencode('.jpg', img_array)
