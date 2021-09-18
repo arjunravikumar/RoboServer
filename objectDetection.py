@@ -51,6 +51,7 @@ def getDesiredObjectFromFrame(toDetect,img):
 def trackObject(img_array,toDetect):
     global tracker
     ok, bBoxTrack = tracker.update(img_array)
+    print(ok)
     objectInFrame = True
     if ok:
         objectInFrame = True
