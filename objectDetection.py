@@ -48,7 +48,7 @@ def getDesiredObjectFromFrame(toDetect,img):
             return True, bbox, img
     return False, None, img
 
-def trackObject(img_array):
+def trackObject(img_array,toDetect):
     global tracker
     ok, bBoxTrack = tracker.update(img_array)
     if(GUIMode):
@@ -87,7 +87,7 @@ def gen_frames(toDetect):
             tracker.init(img_array, bBoxDetect)
             resetTracking = False
         if(objectFound):
-            bBoxTrack,img_array = trackObject(img_array)
+            bBoxTrack,img_array = trackObject(img_array,toDetect)
         if(GUIMode):
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
             ret, buffer = cv2.imencode('.jpg', img_array)
