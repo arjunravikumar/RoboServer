@@ -68,6 +68,9 @@ def trackObject(img_array,toDetect):
              cv2.FONT_HERSHEY_SIMPLEX, 0.50,(0,0,255),2)
     return objectInFrame,bBoxTrack,img_array
 
+def printStatus(msg):
+    print(msg, end='\r')
+
 def gen_frames(toDetect):
     global frame
     global conditionObj
@@ -80,20 +83,20 @@ def gen_frames(toDetect):
     while True:
         img = camera.Capture()
         if(frameCount%300 == 0 or objectFound == False):
-            print("Detecting Object")
+            printStatus("Detecting Object")
             objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
             resetTracking = True
             frameCount = 1
         frameCount += 1
         img_array = jetson.utils.cudaToNumpy(img)
         if(resetTracking and objectFound):
-            print("Reset Initiated")
+            printStatus("Reset Initiated")
             tracker.init(img_array, bBoxDetect)
             resetTracking = False
         if(objectFound):
-            print("Tracking Object")
+            printStatus("Tracking Object")
             objectFound, bBoxTrack,img_array = trackObject(img_array,toDetect)
-            print("Object Status",objectFound)
+            printStatus("Object Status"+str(objectFound))
         if(GUIMode):
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
             cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
@@ -102,7 +105,7 @@ def gen_frames(toDetect):
             with conditionObj:
                 conditionObj.notifyAll()
         else:
-            print(net.GetNetworkFPS(), end='\r')
+            printStatus(net.GetNetworkFPS())
 
 def getFrames():
     global frame
