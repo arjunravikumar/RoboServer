@@ -54,7 +54,8 @@ def gen_frames(toDetect):
         detections = net.Detect(img)
         img_array = jetson.utils.cudaToNumpy(img)
         for detection in detections:
-            print(labelClasses[detection.ClassID]["className"], end='\r')
+            if(GUIMode == False):
+                print(labelClasses[detection.ClassID]["className"], end='\r')
             if(labelClasses[detection.ClassID]["className"] == toDetect):
                 objectFound = True
                 bBoxDetect = [int(detection.Left),int(detection.Top),int(detection.Width),int(detection.Height)]
