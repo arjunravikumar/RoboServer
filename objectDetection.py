@@ -56,9 +56,10 @@ def trackObject(img_array,toDetect):
             p1 = (int(bBoxTrack[0]), int(bBoxTrack[1]))
             p2 = (int(bBoxTrack[0] + bBoxTrack[2]), int(bBoxTrack[1] + bBoxTrack[3]))
             cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
-            cv2.putText(img_array, "Tracking "+ toDetect , (20,80), font, 0.50, (50,170,50),2)
+            cv2.putText(img_array, "Tracking "+ toDetect , (20,80), cv2.FONT_HERSHEY_SIMPLEX, 0.50, (50,170,50),2)
         else :
-            cv2.putText(img_array, toDetect + "Not Visible in Vision", (20,20), cv2.FONT_HERSHEY_SIMPLEX, 0.50,(0,0,255),2)
+            cv2.putText(img_array, toDetect + "Not Visible in Vision", (20,20),\
+             cv2.FONT_HERSHEY_SIMPLEX, 0.50,(0,0,255),2)
     return bBoxTrack,img_array
 
 def gen_frames(toDetect):
