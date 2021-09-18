@@ -17,6 +17,7 @@ frame = None
 robotControls = None
 screenWidth = 1280
 screenHeight = 720
+GUIMode = True
 
 def createTracker(trackerType):
     global tracker
@@ -52,7 +53,6 @@ def gen_frames(toDetect):
         img = camera.Capture()
         img_array = jetson.utils.cudaToNumpy(img)
         detections = net.Detect(img)
-        detectionsForImageTracking = []
         img_array = jetson.utils.cudaToNumpy(img)
         for detection in detections:
             print(detection)
@@ -60,7 +60,6 @@ def gen_frames(toDetect):
                 objectFound = True
                 bBoxDetect = [int(detection.Left),int(detection.Top),int(detection.Width),int(detection.Height)]
                 break
-        cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
         if(objectFound == True and targetLocked == False ):
             ok = tracker.init(img_array, bBoxDetect)
             targetLocked = True
@@ -74,20 +73,25 @@ def gen_frames(toDetect):
                     totalDiff += abs(bBoxTrack[coord] - bBoxDetect[coord])
                 if(totalDiff > 30):
                     targetLocked = False
-                    cv2.putText(img_array, "Tracking not matching detect", (20,20), font, 0.50,(0,0,255),2)
-                else:
+                    if(GUIMode)
+                        cv2.putText(img_array, "Tracking not matching detect", (20,20), font, 0.50,(0,0,255),2)
+                elif(GUIMode):
                     p1 = (int(bBoxTrack[0]), int(bBoxTrack[1]))
                     p2 = (int(bBoxTrack[0] + bBoxTrack[2]), int(bBoxTrack[1] + bBoxTrack[3]))
                     cv2.rectangle(img_array, p1, p2, (255,0,0), 2, 1)
                     cv2.putText(img_array, "Tracking "+ toDetect , (20,80), font, 0.50, (50,170,50),2)
             else :
-                cv2.putText(img_array, toDetect + "Not Visible in Vision", (20,20), font, 0.50,(0,0,255),2)
+                if(GUIMode):
+                    cv2.putText(img_array, toDetect + "Not Visible in Vision", (20,20), font, 0.50,(0,0,255),2)
                 targetLocked = False
-        ret, buffer = cv2.imencode('.jpg', img_array)
-        frame = buffer.tobytes()
-        print(net.GetNetworkFPS(), end='\r')
-        with conditionObj:
-            conditionObj.notifyAll()
+        if(GUIMode):
+            cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
+            ret, buffer = cv2.imencode('.jpg', img_array)
+            frame = buffer.tobytes()
+            with conditionObj:
+                conditionObj.notifyAll()
+        else:
+            print(net.GetNetworkFPS(), end='\r')
 
 def getFrames():
     global frame
@@ -126,5 +130,6 @@ conditionObj = threading.Condition()
 generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
 generateFrames.start()
 
-startWebServer()
+if(GUIMode):
+    startWebServer()
 generateFrames.join()
