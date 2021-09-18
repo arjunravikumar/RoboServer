@@ -5,6 +5,7 @@ from flask import Flask, render_template, Response
 import numpy as np
 import threading
 import time
+from sort import *
 
 app = Flask(__name__)
 
@@ -13,6 +14,7 @@ camera = jetson.utils.videoSource("rtsp://192.168.1.166:8554/unicast")
 tracker = None
 labelClasses = {}
 frame = None
+mot_tracker = Sort()
 
 def createTracker(trackerType):
     global tracker
@@ -32,6 +34,50 @@ def createTracker(trackerType):
         tracker = cv2.legacy.TrackerMOSSE_create()
     if trackerType == "CSRT":
         tracker = cv2.legacy.TrackerCSRT_create()
+
+def genFramesWithSort(toDetect):
+    global tracker
+    global frame
+    global conditionObj
+    font                   = cv2.FONT_HERSHEY_SIMPLEX
+    bottomLeftCornerOfText = (10,650)
+    fontScale              = 0.5
+    fontColor              = (255,255,255)
+    lineType               = 2
+    while True:
+        img = camera.Capture()
+        img_array = jetson.utils.cudaToNumpy(img)
+        detections = net.Detect(img)
+        detectionsForImageTracking = []
+        img_array = jetson.utils.cudaToNumpy(img)
+        if len(detections)> 0:
+            print(detections)
+            dets = []
+            for detection in detections:
+                dets.append(numpy.array([detection.Left,detection.Top,detection.Right,\
+                detection.Bottom,detection.ClassID]))
+            tracked_objects = mot_tracker.update(numpy.array(dets))
+            for x1, y1, x2, y2, obj_id, cls_pred in tracked_objects:
+                box_h = int(((y2 - y1) / unpad_h) * img_array.shape[0])
+                box_w = int(((x2 - x1) / unpad_w) * img_array.shape[1])
+                y1 = int(((y1 - pad_y // 2) / unpad_h) * img_array.shape[0])
+                x1 = int(((x1 - pad_x // 2) / unpad_w) * img_array.shape[1])
+                color = colors[int(obj_id) % len(colors)]
+                color = [i * 255 for i in color]
+                cls = classes[int(cls_pred)]
+                cv2.rectangle(frame, (x1, y1), (x1+box_w, y1+box_h),
+                             color, 4)
+                cv2.rectangle(frame, (x1, y1-35), (x1+len(cls)*19+60,
+                             y1), color, -1)
+                cv2.putText(frame, cls + "-" + str(int(obj_id)),
+                            (x1, y1 - 10), font,
+                            0.5, (255,255,255), 3)
+        cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
+        ret, buffer = cv2.imencode('.jpg', img_array)
+        frame = buffer.tobytes()
+        print(net.GetNetworkFPS(), end='\r')
+        with conditionObj:
+            conditionObj.notifyAll()
 
 def gen_frames(toDetect):
     global tracker
@@ -53,8 +99,6 @@ def gen_frames(toDetect):
             for detection in detections:
                 print(detection)
                 if(labelClasses[detection.ClassID]["className"] == toDetect):
-                    detection = detections[0]
-                    print(detection.Left+detection.Width,detection.Top+detection.Height)
                     boundingBox = [int(detection.Left),int(detection.Top),int(detection.Width),int(detection.Height)]
                     ok = tracker.init(img_array, boundingBox)
                     objectFound = True
@@ -107,7 +151,7 @@ def startWebServer():
 initalisePreProcessingProcedure()
 conditionObj = threading.Condition()
 
-generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
+generateFrames = threading.Thread(target=genFramesWithSort, name='generateFrames',args=("person",))
 generateFrames.start()
 
 # startWebServer()

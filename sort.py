@@ -20,7 +20,7 @@ import numpy as np
 ##import matplotlib.pyplot as plt
 ##import matplotlib.patches as patches
 from skimage import io
-from scipy.optimize import linear_sum_assignment as linear_assignment
+from sklearn.utils.linear_assignment_ import linear_assignment
 import glob
 import time
 import argparse
@@ -289,4 +289,3 @@ if __name__ == '__main__':
   print("Total Tracking took: %.3f for %d frames or %.1f FPS"%(total_time,total_frames,total_frames/total_time))
   if(display):
     print("Note: to get real runtime results run without the option: --display")
-
