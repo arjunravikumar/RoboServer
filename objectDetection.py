@@ -51,7 +51,6 @@ def gen_frames(toDetect):
     targetLocked           = False
     while True:
         img = camera.Capture()
-        img_array = jetson.utils.cudaToNumpy(img)
         detections = net.Detect(img)
         img_array = jetson.utils.cudaToNumpy(img)
         for detection in detections:
