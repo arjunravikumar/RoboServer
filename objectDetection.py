@@ -69,7 +69,7 @@ def trackObject(img_array,toDetect):
     return objectInFrame,bBoxTrack,img_array
 
 def printStatus(msg):
-    print(msg, end='\r')
+    print(msg)
 
 def gen_frames(toDetect):
     global frame
