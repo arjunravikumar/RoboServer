@@ -98,7 +98,6 @@ def gen_frames(toDetect):
             printStatus("Tracking Object")
             objectFound, bBoxTrack,img_array = trackObject(img_array,toDetect)
             printStatus("Object Status"+str(objectFound))
-            objectFound = True
         if(GUIMode):
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
             cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
