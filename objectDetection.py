@@ -129,7 +129,7 @@ def video_feed():
 def initalisePreProcessingProcedure():
     global labelClasses
     global robotControls
-    createTracker('KCF')
+    createTracker('MEDIANFLOW')
     with open('label.txt','r') as f:
         lines = f.readlines()
         labelClasses = {}
