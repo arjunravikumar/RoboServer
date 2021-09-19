@@ -27,6 +27,7 @@ class RoboControls:
 
     def on_open(self,ws):
         self.ws.send("tumbler:wakeup")
+        print("Connected")
 
     def move(self,direction,speed=100):
         if(self.robotIsMobile == False):
