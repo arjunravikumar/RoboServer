@@ -19,7 +19,7 @@ class RoboControls:
     def on_error(self,ws, error):
         print(error)
 
-    def on_close(self,ws):
+    def on_close(self,ws,arg1=None,arg2=None):
         print("### closed ###")
 
     def closeWS(self):
