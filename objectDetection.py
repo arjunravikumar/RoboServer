@@ -70,7 +70,7 @@ def trackObject(img_array,toDetect):
     return objectInFrame,bBoxTrack,img_array
 
 def printStatus(msg):
-    print(msg)
+    print(msg,end = "\r")
 
 def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
