@@ -140,7 +140,6 @@ def video_feed():
 
 def initalisePreProcessingProcedure():
     global labelClasses
-    global robotControls
     createTracker('MEDIANFLOW')
     with open('label.txt','r') as f:
         lines = f.readlines()
@@ -148,6 +147,9 @@ def initalisePreProcessingProcedure():
         for line in lines:
             classVals = line.replace("\n","").split("\t")
             labelClasses[int(classVals[0])] = {"className": classVals[1],"classCategory": classVals[4]}
+
+def startWebSocketClient():
+    global robotControls
     robotControls = RoboControls()
 
 def startWebServer():
@@ -155,12 +157,18 @@ def startWebServer():
 
 if(len(sys.argv) > 1 and sys.argv[1] == "False"):
     GUIMode = False
+
 initalisePreProcessingProcedure()
 conditionObj = threading.Condition()
 
 generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
+startWebSocket = threading.Thread(target=startWebSocketClient, name='webSocket')
+
 generateFrames.start()
+startWebSocket.start()
 
 if(GUIMode):
     startWebServer()
+
 generateFrames.join()
+startWebSocket.join()
