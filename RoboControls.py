@@ -28,12 +28,12 @@ class RoboControls:
     def on_open(self,ws):
         self.ws.send("tumbler:wakeup")
 
-    def move(direction,speed=100):
+    def move(self,direction,speed=100):
         if(self.robotIsMobile == False):
             self.robotIsMobile = True
             self.ws.send(direction)
 
-    def stopMovement():
+    def stopMovement(self):
         if(self.robotIsMobile == True):
             self.robotIsMobile = False
             self.ws.send("DS")
