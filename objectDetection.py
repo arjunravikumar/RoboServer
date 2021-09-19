@@ -158,9 +158,9 @@ if(len(sys.argv) > 1 and sys.argv[1] == "False"):
 initalisePreProcessingProcedure()
 conditionObj = threading.Condition()
 
-# generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
-# generateFrames.start()
+generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
+generateFrames.start()
 
 if(GUIMode):
     startWebServer()
-# generateFrames.join()
+generateFrames.join()
