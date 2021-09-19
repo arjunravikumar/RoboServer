@@ -86,14 +86,16 @@ def gen_frames(toDetect):
         if(frameCount%300 == 0 or objectFound == False):
             printStatus("Detecting Object")
             objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
+            printStatus("Object Detected"+str(objectFound))
             resetTracking = True
             frameCount = 1
         frameCount += 1
         img_array = jetson.utils.cudaToNumpy(img)
         if(resetTracking and objectFound):
             printStatus("Reset Initiated"+str(bBoxDetect))
-            tracker.init(img_array, bBoxDetect)
             resetTracking = False
+            tracker.init(img_array, bBoxDetect)
+            printStatus("Tracking Initialised")
         if(objectFound):
             printStatus("Tracking Object")
             objectFound, bBoxTrack,img_array = trackObject(img_array,toDetect)
