@@ -83,7 +83,7 @@ def gen_frames(toDetect):
     frameCount = 0
     while True:
         img = camera.Capture()
-        if(frameCount%30 == 0 or objectFound == False):
+        if(frameCount%100 == 0 or objectFound == False):
             printStatus("Detecting Object")
             objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
             printStatus("Object Detected"+str(objectFound))
