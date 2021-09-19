@@ -3,7 +3,7 @@ import time
 
 class RoboControls:
     ws = None
-
+    robotIsMobile = False
     def __init__(self):
         websocket.enableTrace(True)
         self.ws = websocket.WebSocketApp("192.168.1.166:8888",
@@ -28,8 +28,12 @@ class RoboControls:
     def on_open(self,ws):
         self.ws.send("tumbler:wakeup")
 
-    def move(direction,speed):
-        self.ws.send(direction)
+    def move(direction,speed=100):
+        if(robotIsMobile == False):
+            robotIsMobile = True
+            self.ws.send(direction)
 
     def stopMovement():
-        self.ws.send("DS")
+        if(robotIsMobile == True):
+            robotIsMobile = False
+            self.ws.send("DS")

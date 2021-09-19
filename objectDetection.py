@@ -72,6 +72,18 @@ def trackObject(img_array,toDetect):
 def printStatus(msg):
     print(msg)
 
+def trackSubjectUsingRobot(bBoxTrack):
+    global robotControls
+    xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
+    screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
+    if(abs(xMid - screenCenterX) > screenWidth/4):
+        if(xMid>screenCenterX):
+            robotControls.move("right")
+        else:
+            robotControls.move("left")
+    else:
+        stopMovement()
+
 def gen_frames(toDetect):
     global frame
     global conditionObj
