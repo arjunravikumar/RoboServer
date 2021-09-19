@@ -78,8 +78,10 @@ def trackSubjectUsingRobot(bBoxTrack):
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(abs(xMid - screenCenterX) > screenWidth/4):
         if(xMid>screenCenterX):
+            print("right")
             robotControls.move("right")
         else:
+            print("left")
             robotControls.move("left")
     else:
         stopMovement()
@@ -138,6 +140,10 @@ def index():
 def video_feed():
     return Response(getFrames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+def startWebSocketClient():
+    global robotControls
+    robotControls = RoboControls()
+
 def initalisePreProcessingProcedure():
     global labelClasses
     createTracker('MEDIANFLOW')
@@ -147,10 +153,7 @@ def initalisePreProcessingProcedure():
         for line in lines:
             classVals = line.replace("\n","").split("\t")
             labelClasses[int(classVals[0])] = {"className": classVals[1],"classCategory": classVals[4]}
-
-def startWebSocketClient():
-    global robotControls
-    robotControls = RoboControls()
+    startWebSocketClient()
 
 def startWebServer():
     app.run("0.0.0.0",port="8000",debug=True)
@@ -162,10 +165,8 @@ initalisePreProcessingProcedure()
 conditionObj = threading.Condition()
 
 generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
-startWebSocket = threading.Thread(target=startWebSocketClient, name='webSocket')
 
 generateFrames.start()
-startWebSocket.start()
 
 if(GUIMode):
     startWebServer()
