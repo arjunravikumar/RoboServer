@@ -79,10 +79,10 @@ def trackSubjectUsingRobot(bBoxTrack):
     if(abs(xMid - screenCenterX) > screenWidth/4):
         if(xMid>screenCenterX):
             print("right")
-            robotControls.move("right")
+#             robotControls.move("right")
         else:
             print("left")
-            robotControls.move("left")
+#             robotControls.move("left")
     else:
         stopMovement()
 
@@ -154,7 +154,7 @@ def initalisePreProcessingProcedure():
         for line in lines:
             classVals = line.replace("\n","").split("\t")
             labelClasses[int(classVals[0])] = {"className": classVals[1],"classCategory": classVals[4]}
-    startWebSocketClient()
+#     startWebSocketClient()
 
 def startWebServer():
     app.run("0.0.0.0",port="8000",debug=True)
