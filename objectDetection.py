@@ -97,7 +97,7 @@ def prepareMessageToSend(bBoxTrack):
             messageToSend["turn"] = "left"
             return True, json.dumps(messageToSend)
     elif(currentDirection != "stop"):
-        printStatus("stop")
+        printStatus("stop " + str(xMid) + " " +str(screenCenterX)
         currentDirection = "stop"
         messageToSend["direction"] = "stop"
         return True, json.dumps(messageToSend)
