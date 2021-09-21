@@ -104,7 +104,8 @@ def gen_frames(toDetect):
         objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
         printStatus("Object Detected "+str(objectFound))
         img_array = jetson.utils.cudaToNumpy(img)
-        trackSubjectUsingRobot(bBoxDetect)
+        if(objectFound):
+            trackSubjectUsingRobot(bBoxDetect)
 #         if(frameCount%100 == 0 or objectFound == False):
 #             printStatus("Detecting Object")
 #             objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
