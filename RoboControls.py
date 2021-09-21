@@ -33,8 +33,8 @@ class RoboControls:
         _thread.start_new_thread(run, (self))
 
     def move(self,direction,speed=100):
-        print(direction,self.robotIsMobile)
         def run(self):
+            print(direction,self.robotIsMobile)
             if(self.robotIsMobile == False):
                 self.robotIsMobile = True
                 self.ws.send(direction)
@@ -43,6 +43,7 @@ class RoboControls:
 
     def stopMovement(self):
         def run(self):
+            print("stop",self.robotIsMobile)
             if(self.robotIsMobile == True):
                 self.robotIsMobile = False
                 self.ws.send("DS")
