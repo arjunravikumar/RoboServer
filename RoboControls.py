@@ -34,7 +34,6 @@ class RoboControls:
 
     def move(self,direction,speed=100):
         def run(self):
-            print(direction,self.robotIsMobile)
             if(self.robotIsMobile == False):
                 self.robotIsMobile = True
                 self.ws.send(direction)
@@ -43,7 +42,6 @@ class RoboControls:
 
     def stopMovement(self):
         def run(self):
-            print("stop",self.robotIsMobile)
             if(self.robotIsMobile == True):
                 self.robotIsMobile = False
                 self.ws.send("DS")
