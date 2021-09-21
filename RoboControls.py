@@ -30,7 +30,7 @@ class RoboControls:
         def run(self):
             self.ws.send("tumbler:wakeup")
             print("Connected")
-        _thread.start_new_thread(run, (self))
+        _thread.start_new_thread(run, (self,))
 
     def move(self,direction,speed=100):
         def run(self):
@@ -38,7 +38,7 @@ class RoboControls:
                 self.robotIsMobile = True
                 self.ws.send(direction)
                 print("Done Sending")
-        _thread.start_new_thread(run, (self))
+        _thread.start_new_thread(run, (self,))
 
     def stopMovement(self):
         def run(self):
@@ -46,4 +46,4 @@ class RoboControls:
                 self.robotIsMobile = False
                 self.ws.send("DS")
                 print("Done Sending")
-        _thread.start_new_thread(run, (self))
+        _thread.start_new_thread(run, (self,))
