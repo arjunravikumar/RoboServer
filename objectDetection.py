@@ -20,6 +20,7 @@ robotControls = None
 screenWidth = 1280
 screenHeight = 720
 GUIMode = True
+currentDirection = "stop"
 
 def createTracker(trackerType):
     global tracker
@@ -75,17 +76,25 @@ def printStatus(msg):
 
 def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
+    global currentDirection
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
-        if(xMid>screenCenterX):
+        if(xMid>screenCenterX and currentDirection != "right"):
             print("right")
+            currentDirection = "right"
             robotControls.move("right")
-        else:
+        elif(xMid<screenCenterX and currentDirection != "left")::
+            currentDirection = "left"
             print("left")
             robotControls.move("left")
+        else:
+            print("stop")
+            currentDirection = "stop"
+            robotControls.stopMovement()
     else:
         print("stop")
+        currentDirection = "stop"
         robotControls.stopMovement()
 
 def gen_frames(toDetect):
