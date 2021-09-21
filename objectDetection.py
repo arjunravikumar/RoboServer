@@ -166,14 +166,13 @@ if(len(sys.argv) > 1 and sys.argv[1] == "False"):
 initalisePreProcessingProcedure()
 conditionObj = threading.Condition()
 
-startWebSocket = threading.Thread(target=startWebSocketClient, name='startWebSocket')
+startWebSocketClient()
+
 generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
 
-startWebSocket.start()
 generateFrames.start()
 
 if(GUIMode):
     startWebServer()
 
-startWebSocket.join()
 generateFrames.join()
