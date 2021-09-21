@@ -70,19 +70,20 @@ def trackObject(img_array,toDetect):
     return objectInFrame,bBoxTrack,img_array
 
 def printStatus(msg):
-    print("",end = "\r")
+    print(msg,end = "\r")
 
 def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
+    print(abs(xMid - screenCenterX) , screenWidth/4)
     if(abs(xMid - screenCenterX) > screenWidth/4):
         if(xMid>screenCenterX):
             print("right")
-#             robotControls.move("right")
+            robotControls.move("right")
         else:
             print("left")
-#             robotControls.move("left")
+            robotControls.move("left")
     else:
         stopMovement()
 
@@ -154,7 +155,7 @@ def initalisePreProcessingProcedure():
         for line in lines:
             classVals = line.replace("\n","").split("\t")
             labelClasses[int(classVals[0])] = {"className": classVals[1],"classCategory": classVals[4]}
-#     startWebSocketClient()
+    startWebSocketClient()
 
 def startWebServer():
     app.run("0.0.0.0",port="8000",debug=True)
