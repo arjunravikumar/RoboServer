@@ -103,6 +103,7 @@ def prepareMessageToSend(bBoxTrack):
     return False,None
 
 def emergencyStop():
+    global currentDirection
     messageToSend = {}
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
