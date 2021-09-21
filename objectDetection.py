@@ -99,6 +99,8 @@ def gen_frames(toDetect):
     global GUIMode
     global camera
     global tracker
+    global currentDirection
+
     objectFound            = False
     resetTracking          = True
     frameCount = 0
