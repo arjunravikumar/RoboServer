@@ -84,7 +84,7 @@ def trackSubjectUsingRobot(bBoxTrack):
             print("right")
             currentDirection = "right"
             robotControls.move("right")
-        elif(xMid<screenCenterX and currentDirection != "left")::
+        elif(xMid<screenCenterX and currentDirection != "left"):
             currentDirection = "left"
             print("left")
             robotControls.move("left")
