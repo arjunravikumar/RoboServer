@@ -77,8 +77,7 @@ def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
-    print(abs(xMid - screenCenterX) , screenWidth/4, bBoxTrack)
-    if(abs(xMid - screenCenterX) > (screenWidth/100)):
+    if(abs(xMid - screenCenterX) > (screenWidth/50)):
         if(xMid>screenCenterX):
             print("right")
             robotControls.move("right")
@@ -106,6 +105,8 @@ def gen_frames(toDetect):
         img_array = jetson.utils.cudaToNumpy(img)
         if(objectFound):
             trackSubjectUsingRobot(bBoxDetect)
+        else:
+            robotControls.stopMovement()
         if(GUIMode):
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
             cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
