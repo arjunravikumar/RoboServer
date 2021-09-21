@@ -89,19 +89,24 @@ def prepareMessageToSend(bBoxTrack):
             printStatus("right")
             currentDirection = "right"
             messageToSend["turn"] = "right"
+            return True, json.dumps(messageToSend)
         elif(xMid < screenCenterX and currentDirection != "left"):
             currentDirection = "left"
             printStatus("left")
             messageToSend["turn"] = "left"
+            return True, json.dumps(messageToSend)
     elif(currentDirection != "stop"):
         printStatus("stop")
         currentDirection = "stop"
         messageToSend["direction"] = "stop"
-    return json.dumps(messageToSend)
+        return True, json.dumps(messageToSend)
+    return False,None
 
 def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
-    robotControls.send(prepareMessageToSend(bBoxTrack))
+    toSend, data= prepareMessageToSend(bBoxTrack)
+    if(toSend):
+        robotControls.send(data)
 
 def gen_frames(toDetect):
     global frame
