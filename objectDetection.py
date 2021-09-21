@@ -73,7 +73,7 @@ def trackObject(img_array,toDetect):
 def printStatus(msg):
     print(msg)
 
-async def trackSubjectUsingRobot(bBoxTrack):
+def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
@@ -81,10 +81,10 @@ async def trackSubjectUsingRobot(bBoxTrack):
     if(abs(xMid - screenCenterX) > screenWidth/10):
         if(xMid>screenCenterX):
             print("right")
-            await robotControls.move("right")
+            robotControls.move("right")
         else:
             print("left")
-            await robotControls.move("left")
+            robotControls.move("left")
     else:
         print("stop")
         robotControls.stopMovement()
