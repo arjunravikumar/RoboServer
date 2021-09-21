@@ -27,5 +27,5 @@ class RoboControls:
             self.robotIsMobile = False
             await self.websocket.send("DS")
 
-    def __init__(self):
+    def initialise(self):
         asyncio.new_event_loop().run_until_complete(self.startWebSocket())

@@ -145,10 +145,12 @@ def video_feed():
 
 def startWebSocketClient():
     global robotControls
-    robotControls = RoboControls()
+    robotControls.initialise()
 
 def initalisePreProcessingProcedure():
     global labelClasses
+    global robotControls
+    robotControls = RoboControls()
     createTracker('MEDIANFLOW')
     with open('label.txt','r') as f:
         lines = f.readlines()
@@ -166,13 +168,14 @@ if(len(sys.argv) > 1 and sys.argv[1] == "False"):
 initalisePreProcessingProcedure()
 conditionObj = threading.Condition()
 
-startWebSocketClient()
-
+startWebSocket = threading.Thread(target=startWebSocketClient, name='startWebSocket')
 generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
 
+startWebSocket.start()
 generateFrames.start()
 
 if(GUIMode):
     startWebServer()
 
+startWebSocket.join()
 generateFrames.join()
