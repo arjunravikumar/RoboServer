@@ -102,6 +102,18 @@ def prepareMessageToSend(bBoxTrack):
         return True, json.dumps(messageToSend)
     return False,None
 
+def emergencyStop():
+    messageToSend = {}
+    messageToSend["type"] = "mobility"
+    messageToSend["direction"] = "no"
+    messageToSend["speed"] = 100
+    messageToSend["rads"] = 0.5
+    if(currentDirection != "stop"):
+        printStatus("stop")
+        currentDirection = "stop"
+        messageToSend["direction"] = "stop"
+        robotControls.send(json.dumps(messageToSend))
+
 def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
     toSend, data= prepareMessageToSend(bBoxTrack)
@@ -139,6 +151,8 @@ def gen_frames(toDetect):
             objectFound, bBoxTrack,img_array = trackObject(img_array,toDetect)
             trackSubjectUsingRobot(bBoxTrack)
             printStatus("Object Status"+str(objectFound))
+        else:
+            emergencyStop()
         if(GUIMode):
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
             cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
