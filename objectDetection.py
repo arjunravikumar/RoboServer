@@ -88,11 +88,7 @@ def trackSubjectUsingRobot(bBoxTrack):
             currentDirection = "left"
             print("left")
             robotControls.move("left")
-        else:
-            print("stop")
-            currentDirection = "stop"
-            robotControls.stopMovement()
-    else:
+    elif(currentDirection != "stop"):
         print("stop")
         currentDirection = "stop"
         robotControls.stopMovement()
