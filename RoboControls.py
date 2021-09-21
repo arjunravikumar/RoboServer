@@ -5,7 +5,7 @@ import _thread
 class RoboControls:
     ws = None
     robotIsMobile = False
-    def __init__(self):
+    def startWS(self):
         websocket.enableTrace(True)
         self.ws = websocket.WebSocketApp("ws://192.168.1.166:8888",
                                   on_message = self.on_message,

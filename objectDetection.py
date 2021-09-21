@@ -146,10 +146,12 @@ def video_feed():
 
 def startWebSocketClient():
     global robotControls
-    robotControls = RoboControls()
+    robotControls.startWS()
 
 def initalisePreProcessingProcedure():
     global labelClasses
+    global robotControls
+    robotControls = RoboControls()
     createTracker('MEDIANFLOW')
     with open('label.txt','r') as f:
         lines = f.readlines()
