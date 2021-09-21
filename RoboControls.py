@@ -1,31 +1,49 @@
+import websocket
 import time
-import asyncio
-import websockets
-
+import _thread
 
 class RoboControls:
-    websocket = None
+    ws = None
     robotIsMobile = False
+    def __init__(self):
+        websocket.enableTrace(True)
+        self.ws = websocket.WebSocketApp("ws://192.168.1.166:8888",
+                                  on_message = self.on_message,
+                                  on_error = self.on_error,
+                                  on_close = self.on_close)
+        self.ws.on_open = self.on_open
+        self.ws.run_forever()
 
-    async def startWebSocket(self):
-        async with websockets.connect('ws://192.168.1.166:8888') as self.websocket:
-            await self.websocket.send("tumbler:wakeup")
-            while(True):
-                msgRecv = await self.websocket.recv()
-                self.messageRecieved(msgRecv)
+    def on_message(self,ws, message):
+        print(message)
 
-    def messageRecieved(self,msgRecv):
-        print("message from server: ",msgRecv)
+    def on_error(self,ws, error):
+        print(error)
 
-    async def move(self,direction,speed=100):
-        if(self.robotIsMobile == False):
-            self.robotIsMobile = True
-            await self.websocket.send(direction)
+    def on_close(self,ws,arg1=None,arg2=None):
+        print("### closed ###")
 
-    async def stopMovement(self):
-        if(self.robotIsMobile == True):
-            self.robotIsMobile = False
-            await self.websocket.send("DS")
+    def closeWS(self):
+        self.ws.close()
 
-    def initialise(self):
-        asyncio.new_event_loop().run_until_complete(self.startWebSocket())
+    def on_open(self,ws):
+        def run(*args):
+            self.ws.send("tumbler:wakeup")
+            print("Connected")
+        _thread.start_new_thread(run, ())
+
+    def move(self,direction,speed=100):
+        def run(*args):
+            if(self.robotIsMobile == False):
+                self.robotIsMobile = True
+                self.ws.send(direction)
+                print("Done Sending")
+        _thread.start_new_thread(run, ())
+
+    def stopMovement(self):
+        def run(*args):
+            if(self.robotIsMobile == True):
+                self.robotIsMobile = False
+                self.ws.send("DS")
+                print("Done Sending")
+            _thread.start_new_thread(run, ())
