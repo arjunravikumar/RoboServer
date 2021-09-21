@@ -31,12 +31,7 @@ class RoboControls:
             self.ws.send("tumbler:wakeup")
         _thread.start_new_thread(run, (self,))
 
-    def move(self,direction,speed=100):
+    def send(self,message):
         def run(self):
-            self.ws.send(direction)
-        _thread.start_new_thread(run, (self,))
-
-    def stopMovement(self):
-        def run(self):
-            self.ws.send("DS")
+            self.ws.send(message)
         _thread.start_new_thread(run, (self,))

@@ -74,24 +74,33 @@ def trackObject(img_array,toDetect):
 def printStatus(msg):
     print(msg)
 
-def trackSubjectUsingRobot(bBoxTrack):
-    global robotControls
-    global currentDirection
+def prepareMessageToSend(bBoxTrack):
+    global currentDirection, screenWidth, screenHeight
+    messageToSend = {}
+    messageToSend["type"] = "mobility"
+    messageToSend["direction"] = "no"
+    messageToSend["speed"] = 100
+    messageToSend["rads"] = 0.5
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
         if(xMid < screenCenterX and currentDirection != "right"):
-            print("right")
+            printStatus("right")
             currentDirection = "right"
-            robotControls.move("right")
+            messageToSend["turn"] = "right"
         elif(xMid > screenCenterX and currentDirection != "left"):
             currentDirection = "left"
-            print("left")
-            robotControls.move("left")
+            printStatus("left")
+            messageToSend["turn"] = "left"
     elif(currentDirection != "stop"):
-        print("stop")
+        printStatus("stop")
         currentDirection = "stop"
-        robotControls.stopMovement()
+        messageToSend["direction"] = "stop"
+    return json.dumps(messageToSend)
+
+def trackSubjectUsingRobot(bBoxTrack):
+    global robotControls
+    robotControls.send(prepareMessageToSend(bBoxTrack))
 
 def gen_frames(toDetect):
     global frame
