@@ -7,6 +7,7 @@ import threading
 import time
 from RoboControls import *
 import sys
+import asyncio
 
 app = Flask(__name__)
 
@@ -72,7 +73,7 @@ def trackObject(img_array,toDetect):
 def printStatus(msg):
     print(msg)
 
-def trackSubjectUsingRobot(bBoxTrack):
+async def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
@@ -80,10 +81,10 @@ def trackSubjectUsingRobot(bBoxTrack):
     if(abs(xMid - screenCenterX) > screenWidth/10):
         if(xMid>screenCenterX):
             print("right")
-            robotControls.move("right")
+            await robotControls.move("right")
         else:
             print("left")
-            robotControls.move("left")
+            await robotControls.move("left")
     else:
         print("stop")
         robotControls.stopMovement()
