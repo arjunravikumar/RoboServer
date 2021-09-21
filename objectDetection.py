@@ -77,7 +77,7 @@ def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
-    print(abs(xMid - screenCenterX) , screenWidth/4)
+    print(abs(xMid - screenCenterX) , screenWidth/4, bBoxTrack)
     if(abs(xMid - screenCenterX) > (screenWidth/100)):
         if(xMid>screenCenterX):
             print("right")
@@ -100,24 +100,27 @@ def gen_frames(toDetect):
     frameCount = 0
     while True:
         img = camera.Capture()
-        if(frameCount%100 == 0 or objectFound == False):
-            printStatus("Detecting Object")
-            objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
-            printStatus("Object Detected"+str(objectFound))
-            resetTracking = True
-            frameCount = 1
-        frameCount += 1
+        objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
         img_array = jetson.utils.cudaToNumpy(img)
-        if(resetTracking and objectFound):
-            printStatus("Reset Initiated"+str(bBoxDetect))
-            resetTracking = False
-            tracker.init(img_array, bBoxDetect)
-            printStatus("Tracking Initialised")
-        if(objectFound):
-            printStatus("Tracking Object")
-            objectFound, bBoxTrack,img_array = trackObject(img_array,toDetect)
-            trackSubjectUsingRobot(bBoxTrack)
-            printStatus("Object Status"+str(objectFound))
+        trackSubjectUsingRobot(bBoxDetect)
+#         if(frameCount%100 == 0 or objectFound == False):
+#             printStatus("Detecting Object")
+#             objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
+#             printStatus("Object Detected"+str(objectFound))
+#             resetTracking = True
+#             frameCount = 1
+#         frameCount += 1
+#         img_array = jetson.utils.cudaToNumpy(img)
+#         if(resetTracking and objectFound):
+#             printStatus("Reset Initiated"+str(bBoxDetect))
+#             resetTracking = False
+#             tracker.init(img_array, bBoxDetect)
+#             printStatus("Tracking Initialised")
+#         if(objectFound):
+#             printStatus("Tracking Object")
+#             objectFound, bBoxTrack,img_array = trackObject(img_array,toDetect)
+#             trackSubjectUsingRobot(bBoxTrack)
+#             printStatus("Object Status"+str(objectFound))
         if(GUIMode):
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
             cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
