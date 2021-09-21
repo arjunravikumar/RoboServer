@@ -76,7 +76,6 @@ def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
-    print(abs(xMid - screenCenterX) , screenWidth/4)
     if(abs(xMid - screenCenterX) > screenWidth/4):
         if(xMid>screenCenterX):
             print("right")
@@ -114,6 +113,7 @@ def gen_frames(toDetect):
         if(objectFound):
             printStatus("Tracking Object")
             objectFound, bBoxTrack,img_array = trackObject(img_array,toDetect)
+            trackSubjectUsingRobot(bBoxTrack)
             printStatus("Object Status"+str(objectFound))
         if(GUIMode):
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
