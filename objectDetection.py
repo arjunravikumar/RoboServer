@@ -77,7 +77,7 @@ def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
-    if(abs(xMid - screenCenterX) > (screenWidth/50)):
+    if(abs(xMid - screenCenterX) > (screenWidth/20)):
         if(xMid>screenCenterX):
             print("right")
             robotControls.move("right")
