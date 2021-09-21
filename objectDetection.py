@@ -156,7 +156,6 @@ def initalisePreProcessingProcedure():
         for line in lines:
             classVals = line.replace("\n","").split("\t")
             labelClasses[int(classVals[0])] = {"className": classVals[1],"classCategory": classVals[4]}
-    startWebSocketClient()
 
 def startWebServer():
     app.run("0.0.0.0",port="8000",debug=True)
@@ -167,11 +166,14 @@ if(len(sys.argv) > 1 and sys.argv[1] == "False"):
 initalisePreProcessingProcedure()
 conditionObj = threading.Condition()
 
+startWebSocket = threading.Thread(target=startWebSocketClient, name='startWebSocket')
 generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
 
+startWebSocket.start()
 generateFrames.start()
 
 if(GUIMode):
     startWebServer()
 
+startWebSocket.join()
 generateFrames.join()
