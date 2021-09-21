@@ -7,14 +7,14 @@ class RoboControls:
     websocket = None
     robotIsMobile = False
 
-    async def startWebSocket():
+    async def startWebSocket(self):
         async with websockets.connect('ws://192.168.1.166:8888') as self.websocket:
             await self.websocket.send("tumbler:wakeup")
             while(True):
                 msgRecv = await websocket.recv()
-                messageRecieved(msgRecv)
+                self.messageRecieved(msgRecv)
 
-    def messageRecieved(msgRecv):
+    def messageRecieved(self,msgRecv):
         print("message from server: ",msgRecv)
 
     async def move(self,direction,speed=100):
@@ -29,4 +29,4 @@ class RoboControls:
 
     def __init__(self):
         startWebSocket()
-        asyncio.get_event_loop().run_until_complete(startWebSocket())
+        asyncio.get_event_loop().run_until_complete(self.startWebSocket())
