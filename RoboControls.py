@@ -28,5 +28,5 @@ class RoboControls:
             await self.websocket.send("DS")
 
     def __init__(self):
-        self.startWebSocket()
+        await self.startWebSocket()
         asyncio.get_event_loop().run_until_complete(self.startWebSocket())

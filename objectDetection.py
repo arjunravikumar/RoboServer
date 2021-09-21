@@ -145,7 +145,7 @@ def video_feed():
 
 def startWebSocketClient():
     global robotControls
-    robotControls = RoboControls()
+    await robotControls = RoboControls()
 
 def initalisePreProcessingProcedure():
     global labelClasses
