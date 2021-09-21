@@ -82,7 +82,7 @@ def prepareMessageToSend(bBoxTrack):
     messageToSend["direction"] = "no"
     messageToSend["speed"] = 100
     messageToSend["rads"] = 0.5
-    printStatus("bBoxTrack "+bBoxTrack)
+    printStatus("bBoxTrack "+str(bBoxTrack))
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
