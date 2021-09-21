@@ -85,7 +85,7 @@ def trackSubjectUsingRobot(bBoxTrack):
             print("left")
             robotControls.move("left")
     else:
-        stopMovement()
+        robotControls.stopMovement()
 
 def gen_frames(toDetect):
     global frame
