@@ -48,4 +48,4 @@ class RoboControls:
                 self.robotIsMobile = False
                 self.ws.send("DS")
                 print("Done Sending")
-            _thread.start_new_thread(run, (self))
+        _thread.start_new_thread(run, (self))
