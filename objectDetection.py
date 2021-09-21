@@ -51,7 +51,7 @@ def getDesiredObjectFromFrame(toDetect,img):
 def trackObject(img_array,toDetect):
     global tracker
     ok, bBoxTrack = tracker.update(img_array)
-    print(ok)
+    printStatus(ok)
     objectInFrame = True
     if ok:
         objectInFrame = True
@@ -70,7 +70,7 @@ def trackObject(img_array,toDetect):
     return objectInFrame,bBoxTrack,img_array
 
 def printStatus(msg):
-    print(msg,end = "\r")
+    print("",end = "\r")
 
 def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
