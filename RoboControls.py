@@ -11,7 +11,7 @@ class RoboControls:
         async with websockets.connect('ws://192.168.1.166:8888') as self.websocket:
             await self.websocket.send("tumbler:wakeup")
             while(True):
-                msgRecv = await websocket.recv()
+                msgRecv = await self.websocket.recv()
                 self.messageRecieved(msgRecv)
 
     def messageRecieved(self,msgRecv):
