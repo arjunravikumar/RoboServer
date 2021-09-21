@@ -29,3 +29,4 @@ class RoboControls:
 
     def __init__(self):
         asyncio.get_event_loop().run_until_complete(self.startWebSocket())
+        asyncio.get_event_loop().run_forever()
