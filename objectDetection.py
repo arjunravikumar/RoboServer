@@ -191,7 +191,7 @@ def initalisePreProcessingProcedure():
     global labelClasses
     global robotControls
     robotControls = RoboControls()
-    createTracker('MEDIANFLOW')
+    createTracker('MOSSE')
     with open('label.txt','r') as f:
         lines = f.readlines()
         labelClasses = {}
