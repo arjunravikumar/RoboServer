@@ -149,7 +149,8 @@ def gen_frames(toDetect):
         if(objectFound):
             printStatus("Tracking Object")
             objectFound, bBoxTrack,img_array = trackObject(img_array,toDetect)
-            trackSubjectUsingRobot(bBoxTrack)
+            if(objectFound):
+                trackSubjectUsingRobot(bBoxTrack)
             printStatus("Object Status"+str(objectFound))
         else:
             emergencyStop()
