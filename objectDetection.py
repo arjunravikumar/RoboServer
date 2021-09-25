@@ -95,7 +95,7 @@ def prepareMessageToSend(bBoxTrack):
             printStatus("left")
             messageToSend["turn"] = "left"
             return True, messageToSend
-    else
+    else:
         printStatus("stop " + str(xMid) + " " +str(screenCenterX))
         messageToSend["direction"] = "stop"
         return True, messageToSend
