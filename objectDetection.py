@@ -85,7 +85,7 @@ def prepareMessageToSend(bBoxTrack):
     printStatus("bBoxTrack "+str(bBoxTrack))
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
-    if(abs(xMid - screenCenterX) > (screenWidth/20)):
+    if(abs(xMid - screenCenterX) > (screenWidth/60)):
         if(xMid > screenCenterX):
             printStatus("right " + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "right"
@@ -139,14 +139,14 @@ def gen_frames(toDetect):
             printStatus("Object Detected"+str(objectFound))
             resetTracking = True
             frameCount = 1
-        frameCount += 1
         img_array = jetson.utils.cudaToNumpy(img)
         if(resetTracking and objectFound):
             printStatus("Reset Initiated"+str(bBoxDetect))
             resetTracking = False
             tracker.init(img_array, bBoxDetect)
             printStatus("Tracking Initialised")
-        if(objectFound):
+        elif(objectFound):
+            frameCount += 1
             printStatus("Tracking Object")
             objectFound, bBoxTrack,img_array = trackObject(img_array,toDetect)
             if(objectFound):
