@@ -126,8 +126,10 @@ def trackSubjectUsingRobot(bBoxTrack):
 def gen_frames(toDetect):
     global frame, conditionObj, GUIMode, camera,tracker
 
-    objectFound            = False
-    resetTracking          = True
+    objectFound             = False
+    resetTracking           = True
+    bBoxTrack               = None
+    bBoxDetect              = None
     frameCount = 0
     while True:
         img = camera.Capture()
@@ -156,8 +158,10 @@ def gen_frames(toDetect):
         if(GUIMode):
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
                         cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
-            cv2.putText(img_array,'BBOX: '+str(bBoxTrack), (10,600), \
-                        cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
+            cv2.putText(img_array,'BBOX Track: '+str(bBoxTrack), (10,600), \
+                        cv2.FONT_HERSHEY_SIMPLEX,0.4,(255,255,255),2)
+            cv2.putText(img_array,'BBOX Detect: '+str(bBoxDetect), (10,550), \
+                        cv2.FONT_HERSHEY_SIMPLEX,0.4,(255,255,255),2)
             ret, buffer = cv2.imencode('.jpg', img_array)
             frame = buffer.tobytes()
             with conditionObj:
