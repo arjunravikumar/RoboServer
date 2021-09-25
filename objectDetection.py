@@ -90,18 +90,18 @@ def prepareMessageToSend(bBoxTrack):
             printStatus("right " + str(xMid) + " " +str(screenCenterX))
             currentDirection = "right"
             messageToSend["turn"] = "right"
-            return True, json.dumps(messageToSend)
+            return True, messageToSend
         elif(xMid < screenCenterX and currentDirection != "left"):
             printStatus("left " + str(xMid) + " " +str(screenCenterX))
             currentDirection = "left"
             printStatus("left")
             messageToSend["turn"] = "left"
-            return True, json.dumps(messageToSend)
+            return True, messageToSend
     elif(currentDirection != "stop"):
         printStatus("stop " + str(xMid) + " " +str(screenCenterX))
         currentDirection = "stop"
         messageToSend["direction"] = "stop"
-        return True, json.dumps(messageToSend)
+        return True, messageToSend
     return False,None
 
 def emergencyStop():
@@ -122,7 +122,7 @@ def trackSubjectUsingRobot(bBoxTrack):
     toSend, data= prepareMessageToSend(bBoxTrack)
     if(toSend):
         data["requestTime"] = time.time() * 1000
-        robotControls.send(data)
+        robotControls.send(json.dumps(data))
 
 def gen_frames(toDetect):
     global frame
