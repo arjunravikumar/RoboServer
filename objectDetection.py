@@ -72,8 +72,7 @@ def trackObject(img_array,toDetect):
     return objectInFrame,bBoxTrack,img_array
 
 def printStatus(msg):
-#     print(msg)
-    pass
+    print(msg)
 
 def prepareMessageToSend(bBoxTrack):
     global screenWidth, screenHeight
@@ -88,7 +87,7 @@ def prepareMessageToSend(bBoxTrack):
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(abs(xMid - screenCenterX) > (screenWidth/30)):
-        messageToSend["stopIn"] = (abs(xMid - screenCenterX)/5000)
+        messageToSend["stopIn"] = (abs(xMid - screenCenterX)/2000)
         if(xMid > screenCenterX):
             printStatus("right " + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "right"
