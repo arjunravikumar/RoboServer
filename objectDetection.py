@@ -85,7 +85,8 @@ def prepareMessageToSend(bBoxTrack):
     printStatus("bBoxTrack "+str(bBoxTrack))
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
-    if(abs(xMid - screenCenterX) > (screenWidth/60)):
+    if(abs(xMid - screenCenterX) > (screenWidth/30)):
+        messageToSend["stopIn"] = (abs(xMid - screenCenterX)/1000)
         if(xMid > screenCenterX):
             printStatus("right " + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "right"
