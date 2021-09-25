@@ -111,6 +111,7 @@ def emergencyStop():
     printStatus("stop")
     messageToSend["direction"] = "stop"
     messageToSend["turn"] = ""
+    messageToSend["requestTime"] = time.time() * 1000
     robotControls.send(messageToSend)
 
 def trackSubjectUsingRobot(bBoxTrack):
