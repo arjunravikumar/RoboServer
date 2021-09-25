@@ -32,11 +32,11 @@ class RoboControls:
     def on_open(self,ws):
         def run(self):
             self.ws.send("tumbler:wakeup")
-        _thread.start_new_thread(run, (self,))
+#         _thread.start_new_thread(run, (self,))
 
     def send(self,message):
         def run(self):
             self.ws.send(json.dumps(message))
         if((message["direction"]+message["turn"]) != self.currentDirection):
             self.currentDirection = message["direction"]+message["turn"]
-            _thread.start_new_thread(run, (self,))
+#             _thread.start_new_thread(run, (self,))
