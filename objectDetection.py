@@ -14,6 +14,7 @@ app = Flask(__name__)
 net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.5)
 camera = jetson.utils.videoSource("rtsp://192.168.1.166:8554/unicast")
 trackerType = 'MOSSE'
+tracker = None
 labelClasses = {}
 frame = None
 robotControls = None
@@ -22,8 +23,7 @@ screenHeight = 720
 GUIMode = True
 
 def createNewTracker():
-    global trackerType
-    tracker = None
+    global trackerType,tracker
     if trackerType == 'BOOSTING':
         tracker = cv2.legacy.TrackerBoosting_create()
     if trackerType == 'MIL':
@@ -40,7 +40,6 @@ def createNewTracker():
         tracker = cv2.legacy.TrackerMOSSE_create()
     if trackerType == "CSRT":
         tracker = cv2.legacy.TrackerCSRT_create()
-    return tracker
 
 def getDesiredObjectFromFrame(toDetect,img):
     global net
@@ -141,6 +140,7 @@ def gen_frames(toDetect):
         img_array = jetson.utils.cudaToNumpy(img)
         if(resetTracking and objectFound):
             printStatus("Reset Initiated"+str(bBoxDetect))
+            createNewTracker()
             tracker.init(img_array, bBoxDetect)
             printStatus("Tracking Initialised")
         elif(objectFound):
