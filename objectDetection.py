@@ -124,7 +124,7 @@ def trackSubjectUsingRobot(bBoxTrack):
         robotControls.send(data)
 
 def gen_frames(toDetect):
-    global frame, conditionObj, GUIMode, camera
+    global frame, conditionObj, GUIMode, camera,tracker
 
     objectFound            = False
     resetTracking          = True
