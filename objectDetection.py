@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.5)
 camera = jetson.utils.videoSource("rtsp://192.168.1.166:8554/unicast")
-tracker = None
+trackerType = 'MOSSE'
 labelClasses = {}
 frame = None
 robotControls = None
@@ -21,8 +21,9 @@ screenWidth = 1280
 screenHeight = 720
 GUIMode = True
 
-def createTracker(trackerType):
-    global tracker
+def createNewTracker():
+    global trackerType
+    tracker = None
     if trackerType == 'BOOSTING':
         tracker = cv2.legacy.TrackerBoosting_create()
     if trackerType == 'MIL':
@@ -39,6 +40,7 @@ def createTracker(trackerType):
         tracker = cv2.legacy.TrackerMOSSE_create()
     if trackerType == "CSRT":
         tracker = cv2.legacy.TrackerCSRT_create()
+    return tracker
 
 def getDesiredObjectFromFrame(toDetect,img):
     global net
@@ -123,11 +125,7 @@ def trackSubjectUsingRobot(bBoxTrack):
         robotControls.send(data)
 
 def gen_frames(toDetect):
-    global frame
-    global conditionObj
-    global GUIMode
-    global camera
-    global tracker
+    global frame, conditionObj, GUIMode, camera
 
     objectFound            = False
     resetTracking          = True
@@ -143,8 +141,8 @@ def gen_frames(toDetect):
         img_array = jetson.utils.cudaToNumpy(img)
         if(resetTracking and objectFound):
             printStatus("Reset Initiated"+str(bBoxDetect))
-            objectFound = tracker.init(img_array, bBoxDetect)
-            printStatus("Tracking Initialised "+str(objectFound))
+            tracker.init(img_array, bBoxDetect)
+            printStatus("Tracking Initialised")
         elif(objectFound):
             frameCount += 1
             printStatus("Tracking Object")
@@ -188,7 +186,6 @@ def initalisePreProcessingProcedure():
     global labelClasses
     global robotControls
     robotControls = RoboControls()
-    createTracker('MOSSE')
     with open('label.txt','r') as f:
         lines = f.readlines()
         labelClasses = {}
