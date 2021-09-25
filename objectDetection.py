@@ -155,7 +155,9 @@ def gen_frames(toDetect):
             emergencyStop()
         if(GUIMode):
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
-            cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
+                        cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
+            cv2.putText(img_array,'BBOX: '+str(bBoxTrack), (10,600), \
+                        cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
             ret, buffer = cv2.imencode('.jpg', img_array)
             frame = buffer.tobytes()
             with conditionObj:
