@@ -110,6 +110,7 @@ def emergencyStop():
     messageToSend["rads"] = 0.5
     printStatus("stop")
     messageToSend["direction"] = "stop"
+    messageToSend["turn"] = ""
     robotControls.send(messageToSend)
 
 def trackSubjectUsingRobot(bBoxTrack):
