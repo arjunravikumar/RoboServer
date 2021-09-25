@@ -144,8 +144,6 @@ def gen_frames(toDetect):
         if(resetTracking and objectFound):
             printStatus("Reset Initiated"+str(bBoxDetect))
             objectFound = tracker.init(img_array, bBoxDetect)
-            if(objectFound):
-                resetTracking = False
             printStatus("Tracking Initialised")
         elif(objectFound):
             frameCount += 1
