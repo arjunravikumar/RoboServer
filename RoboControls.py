@@ -8,13 +8,13 @@ class RoboControls:
     currentDirection = "stop"
 
     def startWS(self):
-        websocket.enableTrace(True)
-        self.ws = websocket.WebSocketApp("ws://192.168.1.166:8888",
-                                  on_message = self.on_message,
-                                  on_error = self.on_error,
-                                  on_close = self.on_close)
-        self.ws.on_open = self.on_open
-        self.ws.run_forever()
+#         websocket.enableTrace(True)
+#         self.ws = websocket.WebSocketApp("ws://192.168.1.166:8888",
+#                                   on_message = self.on_message,
+#                                   on_error = self.on_error,
+#                                   on_close = self.on_close)
+#         self.ws.on_open = self.on_open
+#         self.ws.run_forever()
 
     def on_message(self,ws, message):
         print(message)
