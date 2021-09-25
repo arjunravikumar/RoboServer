@@ -86,7 +86,6 @@ def prepareMessageToSend(bBoxTrack):
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
-        messageToSend["speed"] = 50+ ((abs(xMid - screenCenterX)/(screenWidth/2)) * 20)
         if(xMid > screenCenterX and currentDirection != "right"):
             printStatus("right " + str(xMid) + " " +str(screenCenterX))
             currentDirection = "right"
@@ -122,6 +121,7 @@ def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
     toSend, data= prepareMessageToSend(bBoxTrack)
     if(toSend):
+        data["requestTime"] = time.time() * 1000
         robotControls.send(data)
 
 def gen_frames(toDetect):
