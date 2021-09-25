@@ -100,12 +100,14 @@ def prepareMessageToSend(bBoxTrack):
     else:
         printStatus("stop " + str(xMid) + " " +str(screenCenterX))
         messageToSend["direction"] = "stop"
+        messageToSend["reason"] = "Object in center of Frame Reduce latency"
         return True, messageToSend
     return False,None
 
 def emergencyStop():
     global robotControls
     messageToSend = {}
+    messageToSend["reason"] = "Object Not In Frame"
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
     messageToSend["speed"] = 100
