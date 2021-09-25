@@ -1,10 +1,12 @@
 import websocket
 import time
 import _thread
+import json
 
 class RoboControls:
     ws = None
-    robotIsMobile = False
+    currentDirection = "stop"
+
     def startWS(self):
         websocket.enableTrace(True)
         self.ws = websocket.WebSocketApp("ws://192.168.1.166:8888",
@@ -16,6 +18,7 @@ class RoboControls:
 
     def on_message(self,ws, message):
         print(message)
+        self.currentDirection = "stop"
 
     def on_error(self,ws, error):
         print(error)
@@ -33,5 +36,7 @@ class RoboControls:
 
     def send(self,message):
         def run(self):
-            self.ws.send(message)
-        _thread.start_new_thread(run, (self,))
+            self.ws.send(json.dumps(message))
+        if((message["direction"]+message["turn"]) != self.currentDirection):
+            self.currentDirection = message["direction"]+message["turn"]
+            _thread.start_new_thread(run, (self,))

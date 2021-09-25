@@ -8,7 +8,6 @@ import time
 from RoboControls import *
 import sys
 import asyncio
-import json
 
 app = Flask(__name__)
 
@@ -21,7 +20,6 @@ robotControls = None
 screenWidth = 1280
 screenHeight = 720
 GUIMode = True
-currentDirection = "stop"
 
 def createTracker(trackerType):
     global tracker
@@ -76,54 +74,50 @@ def printStatus(msg):
     print(msg)
 
 def prepareMessageToSend(bBoxTrack):
-    global currentDirection, screenWidth, screenHeight
+    global screenWidth, screenHeight
     messageToSend = {}
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
     messageToSend["speed"] = 100
     messageToSend["rads"] = 0.5
     messageToSend["stopIn"] = 0.1
+    messageToSend["turn"] = ""
     printStatus("bBoxTrack "+str(bBoxTrack))
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
-        if(xMid > screenCenterX and currentDirection != "right"):
+        if(xMid > screenCenterX):
             printStatus("right " + str(xMid) + " " +str(screenCenterX))
-            currentDirection = "right"
             messageToSend["turn"] = "right"
             return True, messageToSend
-        elif(xMid < screenCenterX and currentDirection != "left"):
+        elif(xMid < screenCenterX):
             printStatus("left " + str(xMid) + " " +str(screenCenterX))
-            currentDirection = "left"
             printStatus("left")
             messageToSend["turn"] = "left"
             return True, messageToSend
-    elif(currentDirection != "stop"):
+    else
         printStatus("stop " + str(xMid) + " " +str(screenCenterX))
-        currentDirection = "stop"
         messageToSend["direction"] = "stop"
         return True, messageToSend
     return False,None
 
 def emergencyStop():
-    global currentDirection, robotControls
+    global robotControls
     messageToSend = {}
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
     messageToSend["speed"] = 100
     messageToSend["rads"] = 0.5
-    if(currentDirection != "stop"):
-        printStatus("stop")
-        currentDirection = "stop"
-        messageToSend["direction"] = "stop"
-        robotControls.send(json.dumps(messageToSend))
+    printStatus("stop")
+    messageToSend["direction"] = "stop"
+    robotControls.send(messageToSend)
 
 def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
     toSend, data= prepareMessageToSend(bBoxTrack)
     if(toSend):
         data["requestTime"] = time.time() * 1000
-        robotControls.send(json.dumps(data))
+        robotControls.send(data)
 
 def gen_frames(toDetect):
     global frame
@@ -131,7 +125,6 @@ def gen_frames(toDetect):
     global GUIMode
     global camera
     global tracker
-    global currentDirection
 
     objectFound            = False
     resetTracking          = True
