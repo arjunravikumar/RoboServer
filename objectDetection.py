@@ -92,7 +92,7 @@ def prepareMessageToSend(bBoxTrack):
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
         hyperParam = 0.6
         latency = (hyperParam * latency) + ((1 - hyperParam) * (-0.0001))
-        latency = max(latency,0.1)
+        latency = max(latency,0.15)
         messageToSend["latency"] = latency
         messageToSend["stopIn"] = (abs(xMid - screenCenterX)/2000)
         if(xMid > screenCenterX):
