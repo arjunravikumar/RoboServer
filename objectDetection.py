@@ -91,8 +91,8 @@ def prepareMessageToSend(bBoxTrack):
     printStatus("image latency "+str(latency))
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
         hyperParam = 0.8
-        latency = (hyperParam * latency) + ((1 - hyperParam) * (latency -0.1))
-        latency = min(max(latency,0.15),0.5)
+        latency = (hyperParam * latency) + ((1 - hyperParam) * (latency -0.01))
+        latency = min(max(latency,0.1),0.3)
         messageToSend["latency"] = latency
         messageToSend["stopIn"] = (abs(xMid - screenCenterX)/2000)
         if(xMid > screenCenterX):
@@ -109,8 +109,8 @@ def prepareMessageToSend(bBoxTrack):
         messageToSend["direction"] = "stop"
         messageToSend["reason"] = "Object in center of Frame Increase latency"
         hyperParam = 0.8
-        latency = (hyperParam * latency) + ((1 - hyperParam) * (latency + 0.1))
-        latency = min(max(latency,0.15),0.5)
+        latency = (hyperParam * latency) + ((1 - hyperParam) * (latency + 0.01))
+        latency = min(max(latency,0.10),0.3)
         messageToSend["latency"] = latency
         return True, messageToSend
     return False,None
