@@ -91,7 +91,7 @@ def prepareMessageToSend(bBoxTrack):
     printStatus(latency)
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
         hyperParam = 0.8
-        latency = (hyperParam * latency) + ((1 - hyperParam) * 0.1)
+        latency = (hyperParam * latency) + ((1 - hyperParam) * (-0.01))
         messageToSend["latency"] = latency
         messageToSend["stopIn"] = (abs(xMid - screenCenterX)/1500)
         if(xMid > screenCenterX):
@@ -125,6 +125,7 @@ def emergencyStop():
     messageToSend["direction"] = "stop"
     messageToSend["turn"] = ""
     messageToSend["requestTime"] = time.time() * 1000
+    messageToSend["latency"] =
     robotControls.send(messageToSend)
 
 def trackSubjectUsingRobot(bBoxTrack):
