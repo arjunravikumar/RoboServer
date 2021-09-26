@@ -117,7 +117,7 @@ def emergencyStop():
     messageToSend["rads"] = 0.5
     messageToSend["requestTime"] = time.time() * 1000
     messageToSend["latency"] = latency
-    messageToSend["stopIn"] = 0.2
+    messageToSend["stopIn"] = 0.5
     printStatus("searching for object in direction of previous known location")
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(prevObjectPosition[0] > screenCenterX):
