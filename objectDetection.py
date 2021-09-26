@@ -114,7 +114,7 @@ def prepareMessageToSend(bBoxTrack):
     return False,None
 
 def emergencyStop():
-    global robotControls
+    global robotControls, latency
     messageToSend = {}
     messageToSend["reason"] = "Object Not In Frame"
     messageToSend["type"] = "mobility"
@@ -125,7 +125,7 @@ def emergencyStop():
     messageToSend["direction"] = "stop"
     messageToSend["turn"] = ""
     messageToSend["requestTime"] = time.time() * 1000
-    messageToSend["latency"] =
+    messageToSend["latency"] = latency
     robotControls.send(messageToSend)
 
 def trackSubjectUsingRobot(bBoxTrack):
