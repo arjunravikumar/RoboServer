@@ -110,7 +110,7 @@ def prepareMessageToSend(bBoxTrack):
         messageToSend["reason"] = "Object in center of Frame Increase latency"
         hyperParam = 0.8
         latency = (hyperParam * latency) + ((1 - hyperParam) * (latency + 0.01))
-        latency = min(max(latency,0.10),0.3)
+        latency = min(max(latency,0.1),0.3)
         messageToSend["latency"] = latency
         return True, messageToSend
     return False,None
