@@ -94,7 +94,7 @@ def prepareMessageToSend(bBoxTrack):
         latency = (hyperParam * latency) + ((1 - hyperParam) * (-0.0001))
         latency = max(latency,0.1)
         messageToSend["latency"] = latency
-        messageToSend["stopIn"] = (abs(xMid - screenCenterX)/1800)
+        messageToSend["stopIn"] = (abs(xMid - screenCenterX)/2000)
         if(xMid > screenCenterX):
             printStatus("right " + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "right"
