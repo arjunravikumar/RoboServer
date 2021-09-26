@@ -22,6 +22,8 @@ screenWidth = 1280
 screenHeight = 720
 GUIMode = True
 latency = 0.1
+prevLocation = ""
+prevMovement = ""
 
 def createNewTracker():
     global trackerType,tracker
@@ -90,13 +92,15 @@ def prepareMessageToSend(bBoxTrack):
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     printStatus("image latency "+str(latency))
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
-        hyperParam = 0.8
+        hyperParam = 0.1
         latency = (hyperParam * latency) + ((1 - hyperParam) * (-0.0001))
         latency = max(latency,0)
         messageToSend["latency"] = latency
         messageToSend["stopIn"] = (abs(xMid - screenCenterX)/1800)
         if(xMid > screenCenterX):
             printStatus("right " + str(xMid) + " " +str(screenCenterX))
+            prevLocation = "right"
+            prevMovement = "right"
             messageToSend["turn"] = "right"
             return True, messageToSend
         elif(xMid < screenCenterX):
@@ -108,7 +112,7 @@ def prepareMessageToSend(bBoxTrack):
         printStatus("stop " + str(xMid) + " " +str(screenCenterX))
         messageToSend["direction"] = "stop"
         messageToSend["reason"] = "Object in center of Frame Increase latency"
-        hyperParam = 0.8
+        hyperParam = 0.1
         latency = (hyperParam * latency) + ((1 - hyperParam) * 0.1)
         latency = max(latency,0)
         messageToSend["latency"] = latency
