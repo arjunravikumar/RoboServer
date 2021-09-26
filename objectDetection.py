@@ -109,21 +109,18 @@ def prepareMessageToSend(bBoxTrack):
     return False,None
 
 def emergencyStop():
-    global robotControls, latency, screenWidth, screenHeight
+    global robotControls, latency
     messageToSend = {}
+    messageToSend["reason"] = "Object Not In Frame"
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
     messageToSend["speed"] = 100
     messageToSend["rads"] = 0.5
+    printStatus("stop")
+    messageToSend["direction"] = "stop"
+    messageToSend["turn"] = ""
     messageToSend["requestTime"] = time.time() * 1000
     messageToSend["latency"] = latency
-    messageToSend["stopIn"] = 0.5
-    printStatus("searching for object in direction of previous known location")
-    screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
-    if(prevObjectPosition[0] > screenCenterX):
-        messageToSend["turn"] = "right"
-    else:
-        messageToSend["turn"] = "left"
     robotControls.send(messageToSend)
 
 def trackSubjectUsingRobot(bBoxTrack):
