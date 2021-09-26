@@ -88,6 +88,7 @@ def prepareMessageToSend(bBoxTrack):
     printStatus("bBoxTrack "+str(bBoxTrack))
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
+    printStatus(latency)
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
         hyperParam = 0.8
         latency = (hyperParam * latency) + ((1 - hyperParam) * 0.1)
