@@ -22,8 +22,6 @@ screenWidth = 1280
 screenHeight = 720
 GUIMode = True
 latency = 0.1
-prevLocation = ""
-prevMovement = ""
 
 def createNewTracker():
     global trackerType,tracker
