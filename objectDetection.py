@@ -22,6 +22,7 @@ screenWidth = 1280
 screenHeight = 720
 GUIMode = True
 latency = 0.15
+prevObjectPosition = [0,0]
 
 def createNewTracker():
     global trackerType,tracker
@@ -76,7 +77,7 @@ def printStatus(msg):
     print(msg)
 
 def prepareMessageToSend(bBoxTrack):
-    global screenWidth, screenHeight, latency
+    global screenWidth, screenHeight, latency, prevObjectPosition
     messageToSend = {}
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
@@ -89,6 +90,7 @@ def prepareMessageToSend(bBoxTrack):
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     printStatus("image latency "+str(latency))
+    prevObjectPosition = [xMid,yMid]
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
         messageToSend["stopIn"] = (abs(xMid - screenCenterX)/2000)
         if(xMid > screenCenterX):
@@ -97,7 +99,6 @@ def prepareMessageToSend(bBoxTrack):
             return True, messageToSend
         elif(xMid < screenCenterX):
             printStatus("left " + str(xMid) + " " +str(screenCenterX))
-            printStatus("left")
             messageToSend["turn"] = "left"
             return True, messageToSend
     elif(abs(xMid - screenCenterX) < (screenWidth/100)):
@@ -108,18 +109,21 @@ def prepareMessageToSend(bBoxTrack):
     return False,None
 
 def emergencyStop():
-    global robotControls, latency
+    global robotControls, latency, screenWidth, screenHeight
     messageToSend = {}
-    messageToSend["reason"] = "Object Not In Frame"
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
     messageToSend["speed"] = 100
     messageToSend["rads"] = 0.5
-    printStatus("stop")
-    messageToSend["direction"] = "stop"
-    messageToSend["turn"] = ""
     messageToSend["requestTime"] = time.time() * 1000
     messageToSend["latency"] = latency
+    messageToSend["stopIn"] = 0.2
+    printStatus("searching for object in direction of previous known location")
+    screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
+    if(prevObjectPosition[0] > screenCenterX):
+        messageToSend["turn"] = "right"
+    else:
+        messageToSend["turn"] = "left"
     robotControls.send(messageToSend)
 
 def trackSubjectUsingRobot(bBoxTrack):
@@ -176,8 +180,7 @@ def gen_frames(toDetect):
             printStatus(net.GetNetworkFPS())
 
 def getFrames():
-    global frame
-    global conditionObj
+    global frame, conditionObj
     while True:
         with conditionObj:
             conditionObj.wait()
@@ -196,8 +199,7 @@ def startWebSocketClient():
     robotControls.startWS()
 
 def initalisePreProcessingProcedure():
-    global labelClasses
-    global robotControls
+    global labelClasses,robotControls
     robotControls = RoboControls()
     with open('label.txt','r') as f:
         lines = f.readlines()
