@@ -21,6 +21,7 @@ robotControls = None
 screenWidth = 1280
 screenHeight = 720
 GUIMode = True
+latency = 0.1
 
 def createNewTracker():
     global trackerType,tracker
@@ -75,7 +76,7 @@ def printStatus(msg):
     print(msg)
 
 def prepareMessageToSend(bBoxTrack):
-    global screenWidth, screenHeight
+    global screenWidth, screenHeight, latency
     messageToSend = {}
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
@@ -83,10 +84,14 @@ def prepareMessageToSend(bBoxTrack):
     messageToSend["rads"] = 0.5
     messageToSend["stopIn"] = 0.1
     messageToSend["turn"] = ""
+    messageToSend["latency"] = latency
     printStatus("bBoxTrack "+str(bBoxTrack))
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
+        hyperParam = 0.8
+        latency = (hyperParam * latency) + ((1 - hyperParam) * 0.1)
+        messageToSend["latency"] = latency
         messageToSend["stopIn"] = (abs(xMid - screenCenterX)/1500)
         if(xMid > screenCenterX):
             printStatus("right " + str(xMid) + " " +str(screenCenterX))
@@ -100,7 +105,10 @@ def prepareMessageToSend(bBoxTrack):
     else:
         printStatus("stop " + str(xMid) + " " +str(screenCenterX))
         messageToSend["direction"] = "stop"
-        messageToSend["reason"] = "Object in center of Frame Reduce latency"
+        messageToSend["reason"] = "Object in center of Frame Increase latency"
+        hyperParam = 0.8
+        latency = (hyperParam * latency) + ((1 - hyperParam) * 0.1)
+        messageToSend["latency"] = latency
         return True, messageToSend
     return False,None
 
