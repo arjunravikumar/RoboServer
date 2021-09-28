@@ -5,7 +5,6 @@ import json
 
 class RoboControls:
     ws = None
-    currentDirection = "stop"
 
     def startWS(self):
         websocket.enableTrace(True)
@@ -36,6 +35,4 @@ class RoboControls:
     def send(self,message):
         def run(self):
             self.ws.send(json.dumps(message))
-        if((message["direction"]+message["turn"]) != self.currentDirection):
-            self.currentDirection = message["direction"]+message["turn"]
-            _thread.start_new_thread(run, (self,))
+        _thread.start_new_thread(run, (self,))
