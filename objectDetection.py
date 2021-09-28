@@ -78,7 +78,7 @@ def printStatus(msg):
     print(msg)
 
 def prepareMessageToSend(bBoxTrack):
-    global screenWidth, screenHeight, latency, prevObjectPosition
+    global screenWidth, screenHeight, latency, prevObjectPosition, currentDirection
     messageToSend = {}
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
@@ -113,7 +113,7 @@ def prepareMessageToSend(bBoxTrack):
     return False,None
 
 def emergencyStop():
-    global robotControls, latency
+    global robotControls, latency, currentDirection
     messageToSend = {}
     messageToSend["reason"] = "Object Not In Frame"
     messageToSend["type"] = "mobility"
@@ -136,7 +136,7 @@ def trackSubjectUsingRobot(bBoxTrack):
         robotControls.send(data)
 
 def gen_frames(toDetect):
-    global frame, conditionObj, GUIMode, camera,tracker
+    global frame, conditionObj, GUIMode, camera, tracker, currentDirection
 
     objectFound             = False
     resetTracking           = True
