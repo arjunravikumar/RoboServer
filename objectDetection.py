@@ -94,17 +94,17 @@ def prepareMessageToSend(bBoxTrack):
     prevObjectPosition = [xMid,yMid]
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
         messageToSend["stopIn"] = (abs(xMid - screenCenterX)/2000)
-        if(xMid > screenCenterX):
+        if(xMid > screenCenterX and currentDirection!= "right"):
             printStatus("right " + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "right"
             currentDirection = "right"
             return True, messageToSend
-        elif(xMid < screenCenterX):
+        elif(xMid < screenCenterX and currentDirection!= "left"):
             printStatus("left " + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "left"
             currentDirection = "left"
             return True, messageToSend
-    elif(abs(xMid - screenCenterX) < (screenWidth/20)):
+    elif(abs(xMid - screenCenterX) < (screenWidth/50) and currentDirection!= "stop"):
         printStatus("stop " + str(xMid) + " " +str(screenCenterX))
         messageToSend["direction"] = "stop"
         messageToSend["reason"] = "Object in center of Frame"
@@ -165,7 +165,7 @@ def gen_frames(toDetect):
             if(objectFound):
                 trackSubjectUsingRobot(bBoxTrack)
             printStatus("Object Status"+str(objectFound))
-        else:
+        elif(currentDirection != "stop"):
             emergencyStop()
         if(GUIMode):
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
