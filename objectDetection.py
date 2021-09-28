@@ -23,6 +23,7 @@ screenHeight = 720
 GUIMode = True
 latency = 0.15
 prevObjectPosition = [0,0]
+currentDirection = "stop"
 
 def createNewTracker():
     global trackerType,tracker
@@ -96,15 +97,18 @@ def prepareMessageToSend(bBoxTrack):
         if(xMid > screenCenterX):
             printStatus("right " + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "right"
+            currentDirection = "right"
             return True, messageToSend
         elif(xMid < screenCenterX):
             printStatus("left " + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "left"
+            currentDirection = "left"
             return True, messageToSend
     elif(abs(xMid - screenCenterX) < (screenWidth/20)):
         printStatus("stop " + str(xMid) + " " +str(screenCenterX))
         messageToSend["direction"] = "stop"
         messageToSend["reason"] = "Object in center of Frame"
+        currentDirection = "stop"
         return True, messageToSend
     return False,None
 
@@ -121,6 +125,7 @@ def emergencyStop():
     messageToSend["turn"] = ""
     messageToSend["requestTime"] = time.time() * 1000
     messageToSend["latency"] = latency
+    currentDirection = "stop"
     robotControls.send(messageToSend)
 
 def trackSubjectUsingRobot(bBoxTrack):
