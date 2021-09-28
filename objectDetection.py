@@ -101,7 +101,7 @@ def prepareMessageToSend(bBoxTrack):
             printStatus("left " + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "left"
             return True, messageToSend
-    elif(abs(xMid - screenCenterX) < (screenWidth/100)):
+    elif(abs(xMid - screenCenterX) < (screenWidth/50)):
         printStatus("stop " + str(xMid) + " " +str(screenCenterX))
         messageToSend["direction"] = "stop"
         messageToSend["reason"] = "Object in center of Frame"
