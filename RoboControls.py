@@ -18,7 +18,6 @@ class RoboControls:
 
     def on_message(self,ws, message):
         print(message)
-        self.currentDirection = "stop"
 
     def on_error(self,ws, error):
         print(error)
