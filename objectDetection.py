@@ -25,6 +25,7 @@ videoLatency = 0.15
 currentDirection = "stop"
 movementEndTime = 0
 previousPos = []
+movementPerFrame = 80
 
 def createNewTracker():
     global trackerType,tracker
@@ -80,7 +81,7 @@ def printStatus(msg):
 
 def prepareMessageToSend(bBoxTrack):
     global screenWidth, screenHeight, currentDirection, movementEndTime
-    global previousPos, videoLatency
+    global previousPos, videoLatency, movementPerFrame
     messageToSend = {}
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
@@ -92,13 +93,17 @@ def prepareMessageToSend(bBoxTrack):
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     xGroundTruthPos, yGroundTruthPos = xMid,yMid
     if(currentDirection == "left"):
-        xGroundTruthPos += 80
+        xGroundTruthPos += movementPerFrame
     else:
-        xGroundTruthPos -= 80
+        xGroundTruthPos -= movementPerFrame
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
         print("Diff",abs(previousPos[0]-xMid),currentDirection)
     if(currentDirection == "stop"):
+        if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
+            print("Diff",abs(previousPos[0]-xMid),currentDirection)
+            movementPerFrame = (movementPerFrame + abs(previousPos[0]-xMid))/2
+            print("movementPerFrame",movementPerFrame)
         if(len(previousPos) > 0 and abs(previousPos[0]-xMid) < 20):
             videoLatency = (time.time() - movementEndTime)
             print("Latency ",videoLatency)
