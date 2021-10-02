@@ -98,10 +98,9 @@ def prepareMessageToSend(bBoxTrack):
         xGroundTruthPos -= movementPerFrame
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
-        print("Diff",abs(previousPos[0]-xMid),currentDirection)
+        print("Diff ",abs(previousPos[0]-xMid),currentDirection)
     if(currentDirection == "stop" and len(previousPos) > 0):
         if(abs(previousPos[0]-xMid) > 10):
-            print("Diff",abs(previousPos[0]-xMid),currentDirection)
             movementPerFrame = (movementPerFrame + abs(previousPos[0]-xMid))/2
             print("movementPerFrame",movementPerFrame)
         if(abs(previousPos[0]-xMid) < 5):
@@ -121,8 +120,7 @@ def prepareMessageToSend(bBoxTrack):
             messageToSend["turn"] = "left"
             currentDirection = "left"
             return True, messageToSend
-    elif((abs(xGroundTruthPos - screenCenterX) < (screenWidth/20))\
-            and currentDirection!= "stop"):
+    elif(currentDirection!= "stop"):
         printStatus("stop " + "cameraPos "+ str(xMid) + " groundTruth "\
                                 + str(xGroundTruthPos) + " " +str(screenCenterX))
         messageToSend["direction"] = "stop"
