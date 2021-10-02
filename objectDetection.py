@@ -94,7 +94,7 @@ def prepareMessageToSend(bBoxTrack):
     xGroudTruthPos, yGroudTruthPos = xMid,yMid
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
-        print("Diff in pixels ",abs(previousPos[0]-xMid))
+        print("Diff",abs(previousPos[0]-xMid),currentDirection)
     if(currentDirection == "stop"):
         if(len(previousPos) > 0 and abs(previousPos[0]-xMid) < 20):
             videoLatency = (time.time() - movementEndTime)
