@@ -22,8 +22,9 @@ screenWidth = 1280
 screenHeight = 720
 GUIMode = True
 latency = 0.15
-prevObjectPosition = [0,0]
 currentDirection = "stop"
+movementEndTime = 0
+previousPos = []
 
 def createNewTracker():
     global trackerType,tracker
@@ -78,7 +79,8 @@ def printStatus(msg):
     print(msg)
 
 def prepareMessageToSend(bBoxTrack):
-    global screenWidth, screenHeight, latency, prevObjectPosition, currentDirection
+    global screenWidth, screenHeight, latency, currentDirection, movementEndTime
+    global previousPos, videoLatency
     messageToSend = {}
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
@@ -89,26 +91,33 @@ def prepareMessageToSend(bBoxTrack):
     messageToSend["latency"] = latency
     printStatus("bBoxTrack "+str(bBoxTrack))
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
+    xGroudTruthPos, yGroudTruthPos = xMid,yMid
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     printStatus("image latency "+str(latency))
-    prevObjectPosition = [xMid,yMid]
+    if(currentDirection == "stop"):
+        if(abs(previousPos[0]-xMid) < 20):
+            videoLatency = (time.time() - movementEndTime)
+            print("Latency",videoLatency)
+            print(abs(previousPos[0]-xMid))
+    previousPos = [xMid,yMid]
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
         messageToSend["stopIn"] = (abs(xMid - screenCenterX)/2000)
-        if(xMid > screenCenterX and currentDirection!= "right"):
+        if(xMid > screenCenterX and currentDirection != "right"):
             printStatus("right " + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "right"
             currentDirection = "right"
             return True, messageToSend
-        elif(xMid < screenCenterX and currentDirection!= "left"):
+        elif(xMid < screenCenterX and currentDirection != "left"):
             printStatus("left " + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "left"
             currentDirection = "left"
             return True, messageToSend
-    elif(abs(xMid - screenCenterX) < (screenWidth/50) and currentDirection!= "stop"):
+    elif(abs(xMid - screenCenterX) < (screenWidth/20) and currentDirection!= "stop"):
         printStatus("stop " + str(xMid) + " " +str(screenCenterX))
         messageToSend["direction"] = "stop"
         messageToSend["reason"] = "Object in center of Frame"
         currentDirection = "stop"
+        movementEndTime = time.time()
         return True, messageToSend
     return False,None
 
