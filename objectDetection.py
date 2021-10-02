@@ -116,7 +116,8 @@ def prepareMessageToSend(bBoxTrack):
             messageToSend["turn"] = "left"
             currentDirection = "left"
             return True, messageToSend
-    elif(abs(xGroundTruthPos - screenCenterX) < (screenWidth/20) and currentDirection!= "stop"):
+    elif((abs(xGroundTruthPos - screenCenterX) < (screenWidth/20))\
+            and currentDirection!= "stop"):
         printStatus("stop " + "cameraPos "+ str(xMid) + "groundTruth"\
                                 + str(xGroundTruthPos) + " " +str(screenCenterX))
         messageToSend["direction"] = "stop"
