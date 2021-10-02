@@ -107,7 +107,7 @@ def prepareMessageToSend(bBoxTrack):
             videoLatency = (time.time() - movementEndTime)
             print("Latency ",round(videoLatency,2))
     previousPos = [xMid,yMid]
-    if(abs(xGroundTruthPos - screenCenterX) > (screenWidth/50)):
+    if(abs(xGroundTruthPos - screenCenterX) > (screenWidth/20)):
         if(xGroundTruthPos > screenCenterX and currentDirection != "right"):
             printStatus("right " + "cameraPos "+ str(xMid) + " groundTruth "\
             + str(xGroundTruthPos) + " " +str(screenCenterX))
@@ -120,7 +120,8 @@ def prepareMessageToSend(bBoxTrack):
             messageToSend["turn"] = "left"
             currentDirection = "left"
             return True, messageToSend
-    elif(currentDirection!= "stop"):
+    elif((abs(xGroundTruthPos - screenCenterX) < (screenWidth/20))\
+            and currentDirection!= "stop"):
         printStatus("stop " + "cameraPos "+ str(xMid) + " groundTruth "\
                                 + str(xGroundTruthPos) + " " +str(screenCenterX))
         messageToSend["direction"] = "stop"
