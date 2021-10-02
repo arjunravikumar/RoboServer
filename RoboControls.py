@@ -32,6 +32,7 @@ class RoboControls:
         _thread.start_new_thread(run, (self,))
 
     def send(self,message):
+        print(message)
         def run(self):
             self.ws.send(json.dumps(message))
         _thread.start_new_thread(run, (self,))
