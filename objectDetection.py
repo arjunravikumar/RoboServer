@@ -102,7 +102,6 @@ def prepareMessageToSend(bBoxTrack):
             print("Latency ",videoLatency)
     previousPos = [xMid,yMid]
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
-        messageToSend["stopIn"] = (abs(xMid - screenCenterX)/2000)
         if(xMid > screenCenterX and currentDirection != "right"):
             printStatus("right " + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "right"
