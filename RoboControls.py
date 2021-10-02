@@ -15,7 +15,7 @@ class RoboControls:
         self.ws.run_forever()
 
     def on_message(self,ws, message):
-        print(message)
+        print("Message Received",message)
 
     def on_error(self,ws, error):
         print(error)
@@ -32,7 +32,7 @@ class RoboControls:
         _thread.start_new_thread(run, (self,))
 
     def send(self,message):
-        print(message)
+        print("Message Send",message)
         def run(self):
             self.ws.send(json.dumps(message))
         _thread.start_new_thread(run, (self,))
