@@ -76,7 +76,7 @@ def trackObject(img_array,toDetect):
     return objectInFrame,bBoxTrack,img_array
 
 def printStatus(msg):
-    print(msg)
+    print("")
 
 def prepareMessageToSend(bBoxTrack):
     global screenWidth, screenHeight, currentDirection, movementEndTime
