@@ -100,15 +100,16 @@ def prepareMessageToSend(bBoxTrack):
     if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
         print("Diff",abs(previousPos[0]-xMid),currentDirection)
     if(currentDirection == "stop"):
-        if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
-            print("Diff",abs(previousPos[0]-xMid),currentDirection)
-            movementPerFrame = (movementPerFrame + abs(previousPos[0]-xMid))/2
-            print("movementPerFrame",movementPerFrame)
-        if(len(previousPos) > 0 and abs(previousPos[0]-xMid) < 20):
-            videoLatency = (time.time() - movementEndTime)
-            print("Latency ",videoLatency)
+        if(len(previousPos) > 0):
+            if(abs(previousPos[0]-xMid) > 50):
+                print("Diff",abs(previousPos[0]-xMid),currentDirection)
+                movementPerFrame = (movementPerFrame + abs(previousPos[0]-xMid))/2
+                print("movementPerFrame",movementPerFrame)
+            if(abs(previousPos[0]-xMid) < 5):
+                videoLatency = (time.time() - movementEndTime)
+                print("Latency ",videoLatency)
     previousPos = [xMid,yMid]
-    if(abs(xGroundTruthPos - screenCenterX) > (screenWidth/20)):
+    if(abs(xGroundTruthPos - screenCenterX) > (screenWidth/50)):
         if(xGroundTruthPos > screenCenterX and currentDirection != "right"):
             printStatus("right " + "cameraPos "+ str(xMid) + "groundTruth"\
             + str(xGroundTruthPos) + " " +str(screenCenterX))
@@ -121,7 +122,7 @@ def prepareMessageToSend(bBoxTrack):
             messageToSend["turn"] = "left"
             currentDirection = "left"
             return True, messageToSend
-    elif((abs(xGroundTruthPos - screenCenterX) < (screenWidth/20))\
+    elif((abs(xGroundTruthPos - screenCenterX) < (screenWidth/50))\
             and currentDirection!= "stop"):
         printStatus("stop " + "cameraPos "+ str(xMid) + "groundTruth"\
                                 + str(xGroundTruthPos) + " " +str(screenCenterX))
