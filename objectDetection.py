@@ -86,7 +86,6 @@ def prepareMessageToSend(bBoxTrack):
     messageToSend["direction"] = "no"
     messageToSend["speed"] = 100
     messageToSend["rads"] = 0.5
-    messageToSend["stopIn"] = 0.1
     messageToSend["turn"] = ""
     messageToSend["latency"] = videoLatency
     printStatus("bBoxTrack "+str(bBoxTrack))
