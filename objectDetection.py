@@ -97,6 +97,7 @@ def prepareMessageToSend(bBoxTrack):
     else:
         xGroundTruthPos -= int(movementPerFrame[0]/ movementPerFrame[1])
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
+    print("movementPerFrame",int(movementPerFrame[0]/ movementPerFrame[1]))
     if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
         print("Diff ",abs(previousPos[0]-xMid),currentDirection)
     if(currentDirection == "stop" and len(previousPos) > 0):
