@@ -158,8 +158,7 @@ def trackSubjectUsingRobot(bBoxTrack):
         robotControls.send(data)
 
 def gen_frames(toDetect):
-    global frame, conditionObj, GUIMode, camera, tracker, currentDirection
-
+    global frame, conditionObj, GUIMode, camera, tracker, currentDirection, previousPos
     objectFound             = False
     resetTracking           = True
     bBoxTrack               = None
@@ -170,6 +169,7 @@ def gen_frames(toDetect):
     while True:
         img = camera.Capture()
         if(frameCount%300 == 0 or objectFound == False):
+            previousPos = []
             printStatus("Detecting Object")
             objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
             printStatus("Object Detected"+str(objectFound))
