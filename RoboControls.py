@@ -7,7 +7,6 @@ class RoboControls:
     ws = None
 
     def startWS(self):
-        websocket.enableTrace(True)
         self.ws = websocket.WebSocketApp("ws://192.168.1.166:8888",
                                   on_message = self.on_message,
                                   on_error = self.on_error,
