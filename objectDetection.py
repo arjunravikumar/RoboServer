@@ -94,11 +94,11 @@ def prepareMessageToSend(bBoxTrack):
     xGroudTruthPos, yGroudTruthPos = xMid,yMid
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     printStatus("image latency "+str(latency))
+    print(abs(previousPos[0]-xMid))
     if(currentDirection == "stop"):
         if(len(previousPos) > 0 and abs(previousPos[0]-xMid) < 20):
             videoLatency = (time.time() - movementEndTime)
             print("Latency",videoLatency)
-            print(abs(previousPos[0]-xMid))
     previousPos = [xMid,yMid]
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
         messageToSend["stopIn"] = (abs(xMid - screenCenterX)/2000)
@@ -135,6 +135,7 @@ def emergencyStop():
     messageToSend["requestTime"] = time.time() * 1000
     messageToSend["latency"] = latency
     currentDirection = "stop"
+    movementEndTime = time.time()
     robotControls.send(messageToSend)
 
 def trackSubjectUsingRobot(bBoxTrack):
