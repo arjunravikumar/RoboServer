@@ -95,7 +95,7 @@ def prepareMessageToSend(bBoxTrack):
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     printStatus("image latency "+str(latency))
     if(currentDirection != "stop"):
-        if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 10):
+        if(len(previousPos) > 0):
             print("Diff in pixels ",abs(previousPos[0]-xMid))
     if(currentDirection == "stop"):
         if(len(previousPos) > 0 and abs(previousPos[0]-xMid) < 20):
