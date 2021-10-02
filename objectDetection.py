@@ -163,9 +163,9 @@ def gen_frames(toDetect):
     resetTracking           = True
     bBoxTrack               = None
     bBoxDetect              = None
-    frameCount = 0
-    new_frame_time = 0
-    prev_frame_time = 0
+    frameCount              = 0
+    new_frame_time          = 0
+    prev_frame_time         = 0
     while True:
         img = camera.Capture()
         if(frameCount%300 == 0 or objectFound == False):
