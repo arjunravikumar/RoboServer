@@ -205,7 +205,7 @@ def gen_frames(toDetect):
             new_frame_time = time.time()
             fps = 1/(new_frame_time-prev_frame_time)
             prev_frame_time = new_frame_time
-            printStatus(fps)
+            printStatus("FPS "+str(fps))
 
 def getFrames():
     global frame, conditionObj
