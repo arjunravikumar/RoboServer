@@ -92,9 +92,9 @@ def prepareMessageToSend(bBoxTrack):
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     xGroundTruthPos, yGroundTruthPos = xMid,yMid
     if(currentDirection == "left"):
-        xGroundTruthPos -= 80
-    else:
         xGroundTruthPos += 80
+    else:
+        xGroundTruthPos -= 80
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
         print("Diff",abs(previousPos[0]-xMid),currentDirection)
