@@ -90,7 +90,11 @@ def prepareMessageToSend(bBoxTrack):
     messageToSend["latency"] = videoLatency
     printStatus("bBoxTrack "+str(bBoxTrack))
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
-    xGroudTruthPos, yGroudTruthPos = xMid,yMid
+    xGroundTruthPos, yGroundTruthPos = xMid,yMid
+    if(currentDirection == "left"):
+        xGroundTruthPos -= 80
+    else:
+        xGroundTruthPos += 80
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
         print("Diff",abs(previousPos[0]-xMid),currentDirection)
@@ -99,19 +103,22 @@ def prepareMessageToSend(bBoxTrack):
             videoLatency = (time.time() - movementEndTime)
             print("Latency ",videoLatency)
     previousPos = [xMid,yMid]
-    if(abs(xMid - screenCenterX) > (screenWidth/20)):
-        if(xMid > screenCenterX and currentDirection != "right"):
-            printStatus("right " + str(xMid) + " " +str(screenCenterX))
+    if(abs(xGroundTruthPos - screenCenterX) > (screenWidth/20)):
+        if(xGroundTruthPos > screenCenterX and currentDirection != "right"):
+            printStatus("right " + "cameraPos "+ str(xMid) + "groundTruth"\
+            + str(xGroundTruthPos) + " " +str(screenCenterX))
             messageToSend["turn"] = "right"
             currentDirection = "right"
             return True, messageToSend
-        elif(xMid < screenCenterX and currentDirection != "left"):
-            printStatus("left " + str(xMid) + " " +str(screenCenterX))
+        elif(xGroundTruthPos < screenCenterX and currentDirection != "left"):
+            printStatus("left " + "cameraPos "+ str(xMid) + "groundTruth"\
+                        + str(xGroundTruthPos) + " " +str(screenCenterX))
             messageToSend["turn"] = "left"
             currentDirection = "left"
             return True, messageToSend
-    elif(abs(xMid - screenCenterX) < (screenWidth/20) and currentDirection!= "stop"):
-        printStatus("stop " + str(xMid) + " " +str(screenCenterX))
+    elif(abs(xGroundTruthPos - screenCenterX) < (screenWidth/20) and currentDirection!= "stop"):
+        printStatus("stop " + "cameraPos "+ str(xMid) + "groundTruth"\
+                                + str(xGroundTruthPos) + " " +str(screenCenterX))
         messageToSend["direction"] = "stop"
         messageToSend["reason"] = "Object in center of Frame"
         currentDirection = "stop"
