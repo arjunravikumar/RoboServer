@@ -76,7 +76,7 @@ def trackObject(img_array,toDetect):
     return objectInFrame,bBoxTrack,img_array
 
 def printStatus(msg):
-    print("",end = "\r")
+    print(msg)
 
 def prepareMessageToSend(bBoxTrack):
     global screenWidth, screenHeight, currentDirection, movementEndTime
@@ -93,9 +93,8 @@ def prepareMessageToSend(bBoxTrack):
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     xGroudTruthPos, yGroudTruthPos = xMid,yMid
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
-    if(currentDirection != "stop"):
-        if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
-            print("Diff in pixels ",abs(previousPos[0]-xMid))
+    if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
+        print("Diff in pixels ",abs(previousPos[0]-xMid))
     if(currentDirection == "stop"):
         if(len(previousPos) > 0 and abs(previousPos[0]-xMid) < 20):
             videoLatency = (time.time() - movementEndTime)
