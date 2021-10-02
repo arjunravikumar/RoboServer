@@ -21,7 +21,7 @@ robotControls = None
 screenWidth = 1280
 screenHeight = 720
 GUIMode = True
-latency = 0.15
+videoLatency = 0.15
 currentDirection = "stop"
 movementEndTime = 0
 previousPos = []
@@ -79,7 +79,7 @@ def printStatus(msg):
     print("",end = "\r")
 
 def prepareMessageToSend(bBoxTrack):
-    global screenWidth, screenHeight, latency, currentDirection, movementEndTime
+    global screenWidth, screenHeight, currentDirection, movementEndTime
     global previousPos, videoLatency
     messageToSend = {}
     messageToSend["type"] = "mobility"
@@ -88,19 +88,19 @@ def prepareMessageToSend(bBoxTrack):
     messageToSend["rads"] = 0.5
     messageToSend["stopIn"] = 0.1
     messageToSend["turn"] = ""
-    messageToSend["latency"] = latency
+    messageToSend["latency"] = videoLatency
     printStatus("bBoxTrack "+str(bBoxTrack))
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     xGroudTruthPos, yGroudTruthPos = xMid,yMid
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     printStatus("image latency "+str(latency))
     if(currentDirection != "stop"):
-        if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 20):
-            print(abs(previousPos[0]-xMid))
+        if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 10):
+            print("Diff in pixels ",abs(previousPos[0]-xMid))
     if(currentDirection == "stop"):
         if(len(previousPos) > 0 and abs(previousPos[0]-xMid) < 20):
             videoLatency = (time.time() - movementEndTime)
-            print("Latency",videoLatency)
+            print("Latency ",videoLatency)
     previousPos = [xMid,yMid]
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
         messageToSend["stopIn"] = (abs(xMid - screenCenterX)/2000)
@@ -124,7 +124,7 @@ def prepareMessageToSend(bBoxTrack):
     return False,None
 
 def emergencyStop():
-    global robotControls, latency, currentDirection
+    global robotControls, videoLatency, currentDirection
     messageToSend = {}
     messageToSend["reason"] = "Object Not In Frame"
     messageToSend["type"] = "mobility"
@@ -135,7 +135,7 @@ def emergencyStop():
     messageToSend["direction"] = "stop"
     messageToSend["turn"] = ""
     messageToSend["requestTime"] = time.time() * 1000
-    messageToSend["latency"] = latency
+    messageToSend["latency"] = videoLatency
     currentDirection = "stop"
     movementEndTime = time.time()
     robotControls.send(messageToSend)
