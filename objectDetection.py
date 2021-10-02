@@ -164,6 +164,8 @@ def gen_frames(toDetect):
     bBoxTrack               = None
     bBoxDetect              = None
     frameCount = 0
+    new_frame_time = 0
+    prev_frame_time = 0
     while True:
         img = camera.Capture()
         if(frameCount%300 == 0 or objectFound == False):
@@ -200,7 +202,10 @@ def gen_frames(toDetect):
             with conditionObj:
                 conditionObj.notifyAll()
         else:
-            printStatus(net.GetNetworkFPS())
+            new_frame_time = time.time()
+            fps = 1/(new_frame_time-prev_frame_time)
+            prev_frame_time = new_frame_time
+            printStatus(fps)
 
 def getFrames():
     global frame, conditionObj
