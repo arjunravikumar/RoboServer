@@ -123,6 +123,7 @@ def prepareMessageToSend(bBoxTrack):
     if(abs(xGroundTruth - screenCenterX) > (screenWidth/10)):
         stopIn = (abs(xGroundTruth - screenCenterX)*pixelPerMilliseconds)
         messageToSend["stopIn"] = stopIn
+        messageToSend["pixelPerMilliseconds"] = pixelPerMilliseconds
         if(xGroundTruth > screenCenterX and currentDirection == "stop"):
             printStatus("right " + "cameraPos "+ str(xGroundTruth) +" "+ str(stopIn) \
             + " " +str(screenCenterX))
