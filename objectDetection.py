@@ -106,11 +106,17 @@ def prepareMessageToSend(bBoxTrack):
                 pixelPerMilliseconds = (pixelPerMilliseconds + (videoLatency/diffPixel))/2
                 print("pixeltomillisecondcount" , pixelPerMilliseconds, (videoLatency/diffPixel))
     previousPos = [xMid,yMid]
-    if(abs(xMid - screenCenterX) > (screenWidth/10) and \
-        (movementEndTime + videoLatency) < time.time() ):
-        stopIn = (abs(xMid - screenCenterX)*pixelPerMilliseconds)
-        if(xMid > screenCenterX and currentDirection != "right"):
-            printStatus("right " + "cameraPos "+ str(xMid) +" "+ str(stopIn) \
+    xGroundTruth, yGroundTruth = xMid,yMid
+    if(currentDirection == "right"):
+        xGroundTruth -= 60
+    elif(currentDirection == "left"):
+        xGroundTruth += 60
+    else(currentDirection == "stop" and (movementEndTime + videoLatency) < time.time()):
+        xGroundTruth += (2000*(time.time() - (movementEndTime + videoLatency)))
+    if(abs(xGroundTruth - screenCenterX) > (screenWidth/10)):
+        stopIn = (abs(xGroundTruth - screenCenterX)*pixelPerMilliseconds)
+        if(xGroundTruth > screenCenterX and currentDirection != "right"):
+            printStatus("right " + "cameraPos "+ str(xGroundTruth) +" "+ str(stopIn) \
             + " " +str(screenCenterX))
             currentDirection = "right"
             stopPos = []
@@ -118,8 +124,8 @@ def prepareMessageToSend(bBoxTrack):
             start_time = threading.Timer(stopIn,stopOnCenter)
             start_time.start()
             return True, messageToSend
-        elif(xMid < screenCenterX and currentDirection != "left"):
-            printStatus("left " + "cameraPos "+ str(xMid) +" "+ str(stopIn) \
+        elif(xGroundTruth < screenCenterX and currentDirection != "left"):
+            printStatus("left " + "cameraPos "+ str(xGroundTruth) +" "+ str(stopIn) \
             + " " +str(screenCenterX))
             currentDirection = "left"
             stopPos = []
@@ -127,12 +133,12 @@ def prepareMessageToSend(bBoxTrack):
             start_time = threading.Timer(stopIn,stopOnCenter)
             start_time.start()
             return True, messageToSend
-    elif(abs(xMid - screenCenterX) > (screenWidth/10)):
-        print("Waiting for video latency ",(movementEndTime + videoLatency) - time.time())
     return False,None
 
 def stopOnCenter():
     global robotControls, videoLatency, currentDirection, stopPos, previousPos
+    if(currentDirection == "stop"):
+        return
     stopPos = previousPos[:]
     movementEndTime = time.time()
     messageToSend = {}
