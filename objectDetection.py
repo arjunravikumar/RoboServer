@@ -26,7 +26,7 @@ currentDirection = "stop"
 prevDirection = "stop"
 movementEndTime = 0
 previousPos = []
-pixelPerMilliseconds = 0.0005
+pixelPerMilliseconds = 0.001
 stopPos = []
 
 def createNewTracker():
