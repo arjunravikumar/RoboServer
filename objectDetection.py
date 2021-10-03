@@ -166,7 +166,7 @@ def stopOnCenter():
     messageToSend["latency"] = videoLatency
     prevDirection = currentDirection
     currentDirection = "stop"
-    pixelPerMilliseconds = pixelPerMilliseconds - 0.000005
+    pixelPerMilliseconds = pixelPerMilliseconds + 0.000005
     robotControls.send(messageToSend)
 
 def emergencyStop():
