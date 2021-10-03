@@ -106,7 +106,7 @@ def prepareMessageToSend(bBoxTrack):
                 pixelPerMilliseconds = (pixelPerMilliseconds + (videoLatency/diffPixel))/2
                 print("pixeltomillisecondcount" , pixelPerMilliseconds, (videoLatency/diffPixel))
     previousPos = [xMid,yMid]
-    if(abs(xMid - screenCenterX) > (screenWidth/20) and \
+    if(abs(xMid - screenCenterX) > (screenWidth/10) and \
         (movementEndTime + videoLatency) < time.time() ):
         stopIn = (abs(xMid - screenCenterX)*pixelPerMilliseconds)
         if(xMid > screenCenterX and currentDirection != "right"):
@@ -127,7 +127,7 @@ def prepareMessageToSend(bBoxTrack):
             start_time = threading.Timer(stopIn,stopOnCenter)
             start_time.start()
             return True, messageToSend
-    elif(abs(xMid - screenCenterX) > (screenWidth/20)):
+    elif(abs(xMid - screenCenterX) > (screenWidth/10)):
         print("Waiting for video latency ",(movementEndTime + videoLatency) - time.time())
     return False,None
 
