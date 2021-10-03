@@ -112,7 +112,7 @@ def prepareMessageToSend(bBoxTrack):
         xGroundTruth -= 60
     elif(currentDirection == "left"):
         xGroundTruth += 60
-    elif(currentDirection == "stop" and (movementEndTime + videoLatency) < time.time()):
+    elif(currentDirection == "stop" and movementEndTime > 0 and (movementEndTime + videoLatency) < time.time()):
         if(prevDirection == "left"):
             xGroundTruth += (2000*(time.time() - (movementEndTime + videoLatency)))
         else:
