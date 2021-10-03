@@ -160,7 +160,7 @@ def stopOnCenter():
     printStatus("stop")
     messageToSend["direction"] = "stop"
     messageToSend["turn"] = ""
-    messageToSend["requestTime"] = time.time() * 1000
+    messageToSend["requestTime"] = time.time()
     messageToSend["latency"] = videoLatency
     prevDirection = currentDirection
     currentDirection = "stop"
@@ -179,7 +179,7 @@ def emergencyStop():
     printStatus("stop")
     messageToSend["direction"] = "stop"
     messageToSend["turn"] = ""
-    messageToSend["requestTime"] = time.time() * 1000
+    messageToSend["requestTime"] = time.time()
     messageToSend["latency"] = videoLatency
     prevDirection = currentDirection
     currentDirection = "stop"
@@ -190,7 +190,7 @@ def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
     toSend, data= prepareMessageToSend(bBoxTrack)
     if(toSend):
-        data["requestTime"] = time.time() * 1000
+        data["requestTime"] = time.time()
         robotControls.send(data)
 
 def gen_frames(toDetect):
