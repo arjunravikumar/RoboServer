@@ -21,7 +21,7 @@ robotControls = None
 screenWidth = 1280
 screenHeight = 720
 GUIMode = True
-videoLatency = 0.1
+videoLatency = 0.09
 currentDirection = "stop"
 movementEndTime = 0
 previousPos = []
@@ -126,6 +126,8 @@ def prepareMessageToSend(bBoxTrack):
             start_time = threading.Timer(stopIn,stopOnCenter)
             start_time.start()
             return True, messageToSend
+    elif(abs(xMid - screenCenterX) > (screenWidth/20)):
+        print("Waiting for video latency ",(movementEndTime + videoLatency) - time.time())
     return False,None
 
 def stopOnCenter():
