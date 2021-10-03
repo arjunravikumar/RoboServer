@@ -103,7 +103,7 @@ def prepareMessageToSend(bBoxTrack):
             if(len(stopPos) > 0):
                 diffPixel = abs(stopPos[0]-xMid)
                 print("pixel diff " , diffPixel)
-                pixelPerMilliseconds = (pixelPerMilliseconds + (diffPixel/(videoLatency*1000)))/2
+                pixelPerMilliseconds = (pixelPerMilliseconds + (videoLatency*1000/diffPixel))/2
                 print("pixeltomillisecondcount" , pixelPerMilliseconds)
     previousPos = [xMid,yMid]
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
@@ -120,6 +120,7 @@ def prepareMessageToSend(bBoxTrack):
             printStatus("left " + "cameraPos "+ str(xMid) + " groundTruth"\
                         + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "left"
+            messageToSend["stopIn"] = ((xMid - screenCenterX)/1000)
             currentDirection = "left"
             return True, messageToSend
     elif((abs(xMid - screenCenterX) < (screenWidth/50))\
