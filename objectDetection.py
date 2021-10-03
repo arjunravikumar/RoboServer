@@ -109,14 +109,15 @@ def prepareMessageToSend(bBoxTrack):
     previousPos = [xMid,yMid]
     xGroundTruth, yGroundTruth = xMid,yMid
     if(currentDirection == "right"):
-        xGroundTruth += 60
-    elif(currentDirection == "left"):
         xGroundTruth -= 60
+    elif(currentDirection == "left"):
+        xGroundTruth += 60
     elif(currentDirection == "stop" and (movementEndTime + videoLatency) < time.time()):
         if(prevDirection == "left"):
-            xGroundTruth -= (2000*(time.time() - (movementEndTime + videoLatency)))
-        else:
             xGroundTruth += (2000*(time.time() - (movementEndTime + videoLatency)))
+        else:
+            xGroundTruth -= (2000*(time.time() - (movementEndTime + videoLatency)))
+    print("Ground Truth", xGroundTruth , "Camera Pos", xMid, currentDirection)
     if(abs(xGroundTruth - screenCenterX) > (screenWidth/10)):
         stopIn = (abs(xGroundTruth - screenCenterX)*pixelPerMilliseconds)
         if(xGroundTruth > screenCenterX and currentDirection == "stop"):
