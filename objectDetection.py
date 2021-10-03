@@ -96,6 +96,7 @@ def prepareMessageToSend(bBoxTrack):
     if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
         print("Diff ",abs(previousPos[0]-xMid),currentDirection)
     if(currentDirection == "stop" and len(previousPos) > 0):
+        print("Current Pos after stop",xMid,yMid)
         if(abs(previousPos[0]-xMid) < 5 and movementEndTime > 0):
             videoLatency = (time.time() - movementEndTime)
             print("Latency ", round(videoLatency,2))
