@@ -185,7 +185,7 @@ def emergencyStop():
     messageToSend["latency"] = videoLatency
     prevDirection = currentDirection
     currentDirection = "stop"
-    movementEndTime = time.time()
+    movementEndTime = 0
     robotControls.send(messageToSend)
 
 def trackSubjectUsingRobot(bBoxTrack):
