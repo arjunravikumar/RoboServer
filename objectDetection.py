@@ -108,9 +108,9 @@ def prepareMessageToSend(bBoxTrack):
     previousPos = [xMid,yMid]
     xGroundTruth, yGroundTruth = xMid,yMid
     if(currentDirection == "right"):
-        xGroundTruth -= 60
-    elif(currentDirection == "left"):
         xGroundTruth += 60
+    elif(currentDirection == "left"):
+        xGroundTruth -= 60
     elif(currentDirection == "stop" and (movementEndTime + videoLatency) < time.time()):
         xGroundTruth += (2000*(time.time() - (movementEndTime + videoLatency)))
     if(abs(xGroundTruth - screenCenterX) > (screenWidth/10)):
