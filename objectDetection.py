@@ -21,11 +21,11 @@ robotControls = None
 screenWidth = 1280
 screenHeight = 720
 GUIMode = True
-videoLatency = 0.2
+videoLatency = 0.1
 currentDirection = "stop"
 movementEndTime = 0
 previousPos = []
-pixelPerMilliseconds = 0.0005
+pixelPerMilliseconds = 0.001
 stopPos = []
 
 def createNewTracker():
