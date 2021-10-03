@@ -114,9 +114,9 @@ def prepareMessageToSend(bBoxTrack):
         xGroundTruth += 60
     elif(currentDirection == "stop" and movementEndTime > 0 and (movementEndTime + videoLatency) < time.time()):
         if(prevDirection == "left"):
-            xGroundTruth += (2000*(time.time() - (movementEndTime + videoLatency)))
+            xGroundTruth += ( 2000 * (time.time() - (movementEndTime + videoLatency)) )
         else:
-            xGroundTruth -= (2000*(time.time() - (movementEndTime + videoLatency)))
+            xGroundTruth -= ( 2000 * (time.time() - (movementEndTime + videoLatency)) )
     print("Ground Truth", xGroundTruth , "Camera Pos", xMid, currentDirection)
     messageToSend["xPos"] = xMid
     messageToSend["xGroundTruthPos"] = xGroundTruth
@@ -146,6 +146,7 @@ def prepareMessageToSend(bBoxTrack):
 
 def stopOnCenter():
     global robotControls, videoLatency, currentDirection, stopPos, previousPos, prevDirection
+    global movementEndTime
     if(currentDirection == "stop"):
         return
     stopPos = previousPos[:]
@@ -167,6 +168,7 @@ def stopOnCenter():
 
 def emergencyStop():
     global robotControls, videoLatency, currentDirection, stopPos, prevDirection
+    global movementEndTime
     stopPos = []
     messageToSend = {}
     messageToSend["reason"] = "Emergency Stop - Object Not In Frame"
