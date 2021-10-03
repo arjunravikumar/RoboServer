@@ -184,11 +184,12 @@ def gen_frames(toDetect):
         img = camera.Capture()
         previousPos = []
         objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
-        trackSubjectUsingRobot(bBoxDetect)
-        img_array = jetson.utils.cudaToNumpy(img)
-        if(objectFound == False and currentDirection != "stop"):
+        if(objectFound):
+            trackSubjectUsingRobot(bBoxDetect)
+        elif(currentDirection != "stop"):
             emergencyStop()
         if(GUIMode):
+            img_array = jetson.utils.cudaToNumpy(img)
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
                         cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
             cv2.putText(img_array,'BBOX Track: '+str(bBoxTrack), (10,600), \
