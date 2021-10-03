@@ -113,7 +113,7 @@ def prepareMessageToSend(bBoxTrack):
             + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "right"
             currentDirection = "right"
-            start_time = threading.Timer(stopIn,stopOnCenter,args=(xMid,yMid))
+            start_time = threading.Timer(stopIn,stopOnCenter)
             start_time.start()
             return True, messageToSend
         elif(xMid < screenCenterX and currentDirection != "left"):
@@ -122,7 +122,7 @@ def prepareMessageToSend(bBoxTrack):
                         + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "left"
             currentDirection = "left"
-            start_time = threading.Timer(stopIn,stopOnCenter,args=(xMid,yMid))
+            start_time = threading.Timer(stopIn,stopOnCenter)
             start_time.start()
             return True, messageToSend
     elif((abs(xMid - screenCenterX) < (screenWidth/50))\
@@ -137,9 +137,9 @@ def prepareMessageToSend(bBoxTrack):
         return True, messageToSend
     return False,None
 
-def stopOnCenter(xMid,yMid):
-    global robotControls, videoLatency, currentDirection, stopPos
-    stopPos = [xMid,yMid]
+def stopOnCenter():
+    global robotControls, videoLatency, currentDirection, stopPos,previousPos
+    stopPos = previousPos[:]
     movementEndTime = time.time()
     messageToSend = {}
     messageToSend["reason"] = "Normal Stop"
