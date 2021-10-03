@@ -138,7 +138,7 @@ def prepareMessageToSend(bBoxTrack):
     return False,None
 
 def stopOnCenter():
-    global robotControls, videoLatency, currentDirection, stopPos,previousPos
+    global robotControls, videoLatency, currentDirection, stopPos, previousPos
     stopPos = previousPos[:]
     movementEndTime = time.time()
     messageToSend = {}
