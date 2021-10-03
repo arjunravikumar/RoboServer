@@ -184,6 +184,8 @@ def gen_frames(toDetect):
         img = camera.Capture()
         previousPos = []
         objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
+        print("Object Found ",objectFound)
+        print("Object Location ",bBoxDetect)
         if(objectFound):
             trackSubjectUsingRobot(bBoxDetect)
         elif(currentDirection != "stop"):
