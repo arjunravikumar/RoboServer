@@ -115,7 +115,7 @@ def prepareMessageToSend(bBoxTrack):
         xGroundTruth += (2000*(time.time() - (movementEndTime + videoLatency)))
     if(abs(xGroundTruth - screenCenterX) > (screenWidth/10)):
         stopIn = (abs(xGroundTruth - screenCenterX)*pixelPerMilliseconds)
-        if(xGroundTruth > screenCenterX and currentDirection != "right"):
+        if(xGroundTruth > screenCenterX and currentDirection == "stop"):
             printStatus("right " + "cameraPos "+ str(xGroundTruth) +" "+ str(stopIn) \
             + " " +str(screenCenterX))
             currentDirection = "right"
@@ -124,7 +124,7 @@ def prepareMessageToSend(bBoxTrack):
             start_time = threading.Timer(stopIn,stopOnCenter)
             start_time.start()
             return True, messageToSend
-        elif(xGroundTruth < screenCenterX and currentDirection != "left"):
+        elif(xGroundTruth < screenCenterX and currentDirection == "stop"):
             printStatus("left " + "cameraPos "+ str(xGroundTruth) +" "+ str(stopIn) \
             + " " +str(screenCenterX))
             currentDirection = "left"
