@@ -139,7 +139,8 @@ def prepareMessageToSend(bBoxTrack):
 
 def stopOnCenter():
     global robotControls, videoLatency, currentDirection, stopPos
-    stopPos = []
+    stopPos = [xMid,yMid]
+    movementEndTime = time.time()
     messageToSend = {}
     messageToSend["reason"] = "Normal Stop"
     messageToSend["type"] = "mobility"
@@ -152,7 +153,6 @@ def stopOnCenter():
     messageToSend["requestTime"] = time.time() * 1000
     messageToSend["latency"] = videoLatency
     currentDirection = "stop"
-    movementEndTime = time.time()
     robotControls.send(messageToSend)
 
 def emergencyStop():
