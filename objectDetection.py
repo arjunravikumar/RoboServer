@@ -185,7 +185,6 @@ def gen_frames(toDetect):
     prev_frame_time         = 0
     while True:
         img = camera.Capture()
-        previousPos = []
         objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
         print("Object Found ",objectFound)
         print("Object Location ",bBoxDetect)
