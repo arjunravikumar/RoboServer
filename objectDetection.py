@@ -166,11 +166,12 @@ def stopOnCenter():
     messageToSend["latency"] = videoLatency
     prevDirection = currentDirection
     currentDirection = "stop"
+    pixelPerMilliseconds = pixelPerMilliseconds - 0.000005
     robotControls.send(messageToSend)
 
 def emergencyStop():
     global robotControls, videoLatency, currentDirection, stopPos, prevDirection
-    global movementEndTime
+    global movementEndTime, pixelPerMilliseconds
     stopPos = []
     messageToSend = {}
     messageToSend["reason"] = "Emergency Stop - Object Not In Frame"
@@ -186,6 +187,7 @@ def emergencyStop():
     prevDirection = currentDirection
     currentDirection = "stop"
     movementEndTime = 0
+    pixelPerMilliseconds = pixelPerMilliseconds - 0.0001
     robotControls.send(messageToSend)
 
 def trackSubjectUsingRobot(bBoxTrack):
