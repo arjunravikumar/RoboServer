@@ -25,7 +25,7 @@ videoLatency = 0.1
 currentDirection = "stop"
 movementEndTime = 0
 previousPos = []
-pixelPerMilliseconds = 0.002
+pixelPerMilliseconds = 0.0005
 stopPos = []
 
 def createNewTracker():
