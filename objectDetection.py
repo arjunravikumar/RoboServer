@@ -23,6 +23,7 @@ screenHeight = 720
 GUIMode = True
 videoLatency = 0.09
 currentDirection = "stop"
+prevDirection = "stop"
 movementEndTime = 0
 previousPos = []
 pixelPerMilliseconds = 0.0005
@@ -81,7 +82,7 @@ def printStatus(msg):
     print(msg,end = "\n")
 
 def prepareMessageToSend(bBoxTrack):
-    global screenWidth, screenHeight, currentDirection, movementEndTime
+    global screenWidth, screenHeight, currentDirection, movementEndTime, prevDirection
     global previousPos, videoLatency, stopPos, pixelPerMilliseconds
     messageToSend = {}
     messageToSend["type"] = "mobility"
@@ -108,11 +109,14 @@ def prepareMessageToSend(bBoxTrack):
     previousPos = [xMid,yMid]
     xGroundTruth, yGroundTruth = xMid,yMid
     if(currentDirection == "right"):
-        xGroundTruth += 60
-    elif(currentDirection == "left"):
         xGroundTruth -= 60
+    elif(currentDirection == "left"):
+        xGroundTruth += 60
     elif(currentDirection == "stop" and (movementEndTime + videoLatency) < time.time()):
-        xGroundTruth += (2000*(time.time() - (movementEndTime + videoLatency)))
+        if(prevDirection == "left"):
+            xGroundTruth += (2000*(time.time() - (movementEndTime + videoLatency)))
+        else:
+            xGroundTruth -= (2000*(time.time() - (movementEndTime + videoLatency)))
     if(abs(xGroundTruth - screenCenterX) > (screenWidth/10)):
         stopIn = (abs(xGroundTruth - screenCenterX)*pixelPerMilliseconds)
         if(xGroundTruth > screenCenterX and currentDirection == "stop"):
@@ -136,7 +140,7 @@ def prepareMessageToSend(bBoxTrack):
     return False,None
 
 def stopOnCenter():
-    global robotControls, videoLatency, currentDirection, stopPos, previousPos
+    global robotControls, videoLatency, currentDirection, stopPos, previousPos, prevDirection
     if(currentDirection == "stop"):
         return
     stopPos = previousPos[:]
@@ -152,11 +156,12 @@ def stopOnCenter():
     messageToSend["turn"] = ""
     messageToSend["requestTime"] = time.time() * 1000
     messageToSend["latency"] = videoLatency
+    prevDirection = currentDirection
     currentDirection = "stop"
     robotControls.send(messageToSend)
 
 def emergencyStop():
-    global robotControls, videoLatency, currentDirection, stopPos
+    global robotControls, videoLatency, currentDirection, stopPos, prevDirection
     stopPos = []
     messageToSend = {}
     messageToSend["reason"] = "Emergency Stop - Object Not In Frame"
@@ -169,6 +174,7 @@ def emergencyStop():
     messageToSend["turn"] = ""
     messageToSend["requestTime"] = time.time() * 1000
     messageToSend["latency"] = videoLatency
+    prevDirection = currentDirection
     currentDirection = "stop"
     movementEndTime = time.time()
     robotControls.send(messageToSend)
