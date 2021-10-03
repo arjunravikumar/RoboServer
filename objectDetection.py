@@ -99,7 +99,7 @@ def prepareMessageToSend(bBoxTrack):
         if(abs(previousPos[0]-xMid) < 5):
             videoLatency = (time.time() - movementEndTime)
             print("Latency ", round(videoLatency,2))
-            if(len(stopPos) > 0):
+            if(len(stopPos) > 0 and (stopPos[0]-xMid) > 0):
                 diffPixel = abs(stopPos[0]-xMid)
                 print("pixel diff " , diffPixel)
                 pixelPerMilliseconds = (pixelPerMilliseconds + (videoLatency/diffPixel))/2
