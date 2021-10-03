@@ -109,10 +109,11 @@ def prepareMessageToSend(bBoxTrack):
             print("movementPerFrame",int(movementPerFrame[0]/ movementPerFrame[1]))
         if(abs(previousPos[0]-xMid) < 5):
             videoLatency = (time.time() - movementEndTime)
-            diffPixel = abs(stopPos[0]-xMid)
-            print("pixel diff " , diffPixel)
             print("Latency ", round(videoLatency,2))
-            print("pixeltomillisecondcount" , (diffPixel/(videoLatency*1000)))
+            if(len(stopPos) > 0):
+                diffPixel = abs(stopPos[0]-xMid)
+                print("pixel diff " , diffPixel)
+                print("pixeltomillisecondcount" , (diffPixel/(videoLatency*1000)))
     previousPos = [xMid,yMid]
     if(abs(xGroundTruthPos - screenCenterX) > (screenWidth/20)):
         if(xGroundTruthPos > screenCenterX and currentDirection != "right"):
