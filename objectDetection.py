@@ -111,7 +111,7 @@ def prepareMessageToSend(bBoxTrack):
         if(xMid > screenCenterX and currentDirection != "right"):
             printStatus("right " + "cameraPos "+ str(xMid) +" "+ str(stopIn) \
             + " " +str(screenCenterX))
-            messageToSend["turn"] = "right"
+            currentDirection = "right"
             stopPos = []
             messageToSend["turn"] = currentDirection
             start_time = threading.Timer(stopIn,stopOnCenter)
