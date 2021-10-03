@@ -99,7 +99,7 @@ def prepareMessageToSend(bBoxTrack):
     if(currentDirection == "stop" and len(previousPos) > 0):
         print("Current Pos after stop",xMid,yMid)
         if(abs(previousPos[0]-xMid) < 5 and movementEndTime > 0):
-            videoLatency = (time.time() - movementEndTime)
+#             videoLatency = (time.time() - movementEndTime)
             print("Latency ", round(videoLatency,2))
             if(len(stopPos) > 0 and (stopPos[0]-xMid) > 0):
                 diffPixel = abs(stopPos[0]-xMid)
