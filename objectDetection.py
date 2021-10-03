@@ -109,33 +109,21 @@ def prepareMessageToSend(bBoxTrack):
         (movementEndTime + videoLatency) < time.time() ):
         stopIn = (abs(xMid - screenCenterX)*pixelPerMilliseconds)
         if(xMid > screenCenterX and currentDirection != "right"):
-            stopPos = []
-            printStatus("right " + "cameraPos "+ str(xMid) + " groundTruth "\
-            + str(xMid) + " " +str(screenCenterX))
+            printStatus("right " + "cameraPos "+ str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "right"
-            currentDirection = "right"
+            stopPos = []
+            messageToSend["turn"] = currentDirection
             start_time = threading.Timer(stopIn,stopOnCenter)
             start_time.start()
             return True, messageToSend
         elif(xMid < screenCenterX and currentDirection != "left"):
-            stopPos = []
-            printStatus("left " + "cameraPos "+ str(xMid) + " groundTruth"\
-                        + str(xMid) + " " +str(screenCenterX))
-            messageToSend["turn"] = "left"
+            printStatus("left " + "cameraPos "+ str(xMid) + " " +str(screenCenterX))
             currentDirection = "left"
+            stopPos = []
+            messageToSend["turn"] = currentDirection
             start_time = threading.Timer(stopIn,stopOnCenter)
             start_time.start()
             return True, messageToSend
-    elif((abs(xMid - screenCenterX) < (screenWidth/50))\
-            and currentDirection!= "stop"):
-        printStatus("stop " + "cameraPos "+ str(xMid) + " groundTruth "\
-                                + str(xMid) + " " +str(screenCenterX))
-        messageToSend["direction"] = "stop"
-        messageToSend["reason"] = "Emergency Stop - Object in center of Frame"
-        currentDirection = "stop"
-        stopPos = [xMid,yMid]
-        movementEndTime = time.time()
-        return True, messageToSend
     return False,None
 
 def stopOnCenter():
