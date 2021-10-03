@@ -105,7 +105,8 @@ def prepareMessageToSend(bBoxTrack):
                 pixelPerMilliseconds = (pixelPerMilliseconds + (videoLatency/diffPixel))/2
                 print("pixeltomillisecondcount" , pixelPerMilliseconds)
     previousPos = [xMid,yMid]
-    if(abs(xMid - screenCenterX) > (screenWidth/20)):
+    if(abs(xMid - screenCenterX) > (screenWidth/20) and \
+    (movementEndTime + videoLatency) < time.time() ):
         stopIn = (abs(xMid - screenCenterX)*pixelPerMilliseconds)
         if(xMid > screenCenterX and currentDirection != "right"):
             stopPos = []
