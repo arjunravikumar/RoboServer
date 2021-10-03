@@ -111,6 +111,7 @@ def prepareMessageToSend(bBoxTrack):
             stopPos = []
             printStatus("right " + "cameraPos "+ str(xMid) + " groundTruth "\
             + str(xMid) + " " +str(screenCenterX))
+            messageToSend["stopIn"] = ((xMid - screenCenterX)/1000)
             messageToSend["turn"] = "right"
             currentDirection = "right"
             return True, messageToSend
