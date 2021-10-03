@@ -21,12 +21,12 @@ robotControls = None
 screenWidth = 1280
 screenHeight = 720
 GUIMode = True
-videoLatency = 0.09
+videoLatency = 0.05
 currentDirection = "stop"
 prevDirection = "stop"
 movementEndTime = 0
 previousPos = []
-pixelPerMilliseconds = 0.001
+pixelPerMilliseconds = 0.0008
 stopPos = []
 
 def createNewTracker():
@@ -118,8 +118,11 @@ def prepareMessageToSend(bBoxTrack):
         else:
             xGroundTruth -= (2000*(time.time() - (movementEndTime + videoLatency)))
     print("Ground Truth", xGroundTruth , "Camera Pos", xMid, currentDirection)
+    messageToSend["xPos"] = xMid
+    messageToSend["xGroundTruthPos"] = xGroundTruth
     if(abs(xGroundTruth - screenCenterX) > (screenWidth/10)):
         stopIn = (abs(xGroundTruth - screenCenterX)*pixelPerMilliseconds)
+        messageToSend["stopIn"] = stopIn
         if(xGroundTruth > screenCenterX and currentDirection == "stop"):
             printStatus("right " + "cameraPos "+ str(xGroundTruth) +" "+ str(stopIn) \
             + " " +str(screenCenterX))
