@@ -26,6 +26,8 @@ currentDirection = "stop"
 movementEndTime = 0
 previousPos = []
 movementPerFrame = [70,1]
+pixelPerMilliseconds = 0.2
+stopPos = []
 
 def createNewTracker():
     global trackerType,tracker
@@ -81,7 +83,7 @@ def printStatus(msg):
 
 def prepareMessageToSend(bBoxTrack):
     global screenWidth, screenHeight, currentDirection, movementEndTime
-    global previousPos, videoLatency, movementPerFrame
+    global previousPos, videoLatency, movementPerFrame, stopPos
     messageToSend = {}
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
@@ -107,7 +109,10 @@ def prepareMessageToSend(bBoxTrack):
             print("movementPerFrame",int(movementPerFrame[0]/ movementPerFrame[1]))
         if(abs(previousPos[0]-xMid) < 5):
             videoLatency = (time.time() - movementEndTime)
-            print("Latency ",round(videoLatency,2))
+            diffPixel = abs(stopPos[0]-xMid)
+            print("pixel diff " , diffPixel)
+            print("Latency ", round(videoLatency,2))
+            print("pixeltomillisecondcount" , (diffPixel/(videoLatency*1000)))
     previousPos = [xMid,yMid]
     if(abs(xGroundTruthPos - screenCenterX) > (screenWidth/20)):
         if(xGroundTruthPos > screenCenterX and currentDirection != "right"):
@@ -129,6 +134,7 @@ def prepareMessageToSend(bBoxTrack):
         messageToSend["direction"] = "stop"
         messageToSend["reason"] = "Object in center of Frame"
         currentDirection = "stop"
+        stopPos = [xMid,yMid]
         movementEndTime = time.time()
         return True, messageToSend
     return False,None
