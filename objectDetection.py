@@ -25,7 +25,7 @@ videoLatency = 0.1
 currentDirection = "stop"
 movementEndTime = 0
 previousPos = []
-pixelPerMilliseconds = 0.1
+pixelPerMilliseconds = 0.001
 stopPos = []
 
 def createNewTracker():
@@ -103,15 +103,15 @@ def prepareMessageToSend(bBoxTrack):
             if(len(stopPos) > 0):
                 diffPixel = abs(stopPos[0]-xMid)
                 print("pixel diff " , diffPixel)
-                pixelPerMilliseconds = (pixelPerMilliseconds + (videoLatency*1000/diffPixel))/2
+                pixelPerMilliseconds = (pixelPerMilliseconds + (videoLatency/diffPixel))/2
                 print("pixeltomillisecondcount" , pixelPerMilliseconds)
     previousPos = [xMid,yMid]
     if(abs(xMid - screenCenterX) > (screenWidth/20)):
+        messageToSend["stopIn"] = (abs(xMid - screenCenterX)*pixelPerMilliseconds)
         if(xMid > screenCenterX and currentDirection != "right"):
             stopPos = []
             printStatus("right " + "cameraPos "+ str(xMid) + " groundTruth "\
             + str(xMid) + " " +str(screenCenterX))
-            messageToSend["stopIn"] = ((xMid - screenCenterX)/1000)
             messageToSend["turn"] = "right"
             currentDirection = "right"
             return True, messageToSend
