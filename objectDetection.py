@@ -25,8 +25,7 @@ videoLatency = 0.1
 currentDirection = "stop"
 movementEndTime = 0
 previousPos = []
-movementPerFrame = [70,1]
-pixelPerMilliseconds = 0.2
+pixelPerMilliseconds = 0.1
 stopPos = []
 
 def createNewTracker():
@@ -83,7 +82,7 @@ def printStatus(msg):
 
 def prepareMessageToSend(bBoxTrack):
     global screenWidth, screenHeight, currentDirection, movementEndTime
-    global previousPos, videoLatency, movementPerFrame, stopPos
+    global previousPos, videoLatency, stopPos, pixelPerMilliseconds
     messageToSend = {}
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
@@ -91,47 +90,41 @@ def prepareMessageToSend(bBoxTrack):
     messageToSend["rads"] = 0.5
     messageToSend["turn"] = ""
     messageToSend["latency"] = videoLatency
+    messageToSend["stopIn"] = 0.1
     printStatus("bBoxTrack "+str(bBoxTrack))
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
-    xGroundTruthPos, yGroundTruthPos = xMid,yMid
-    if(currentDirection == "left"):
-        xGroundTruthPos += int(movementPerFrame[0]/ movementPerFrame[1])
-    else:
-        xGroundTruthPos -= int(movementPerFrame[0]/ movementPerFrame[1])
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
-    print("movementPerFrame",int(movementPerFrame[0]/ movementPerFrame[1]))
     if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
         print("Diff ",abs(previousPos[0]-xMid),currentDirection)
     if(currentDirection == "stop" and len(previousPos) > 0):
-        if(abs(previousPos[0]-xMid) > 5):
-            movementPerFrame[0] += abs(previousPos[0]-xMid)
-            movementPerFrame[1] += 1
-            print("movementPerFrame",int(movementPerFrame[0]/ movementPerFrame[1]))
-        else:
+        if(abs(previousPos[0]-xMid) < 5):
             videoLatency = (time.time() - movementEndTime)
             print("Latency ", round(videoLatency,2), stopPos[0], xMid)
             if(len(stopPos) > 0):
                 diffPixel = abs(stopPos[0]-xMid)
                 print("pixel diff " , diffPixel)
-                print("pixeltomillisecondcount" , (diffPixel/(videoLatency*1000)))
+                pixelPerMilliseconds = (pixelPerMilliseconds + (diffPixel/(videoLatency*1000)))/2
+                print("pixeltomillisecondcount" , pixelPerMilliseconds)
     previousPos = [xMid,yMid]
-    if(abs(xGroundTruthPos - screenCenterX) > (screenWidth/20)):
-        if(xGroundTruthPos > screenCenterX and currentDirection != "right"):
+    if(abs(xMid - screenCenterX) > (screenWidth/20)):
+        if(xMid > screenCenterX and currentDirection != "right"):
+            stopPos = []
             printStatus("right " + "cameraPos "+ str(xMid) + " groundTruth "\
-            + str(xGroundTruthPos) + " " +str(screenCenterX))
+            + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "right"
             currentDirection = "right"
             return True, messageToSend
-        elif(xGroundTruthPos < screenCenterX and currentDirection != "left"):
+        elif(xMid < screenCenterX and currentDirection != "left"):
+            stopPos = []
             printStatus("left " + "cameraPos "+ str(xMid) + " groundTruth"\
-                        + str(xGroundTruthPos) + " " +str(screenCenterX))
+                        + str(xMid) + " " +str(screenCenterX))
             messageToSend["turn"] = "left"
             currentDirection = "left"
             return True, messageToSend
-    elif((abs(xGroundTruthPos - screenCenterX) < (screenWidth/50))\
+    elif((abs(xMid - screenCenterX) < (screenWidth/50))\
             and currentDirection!= "stop"):
         printStatus("stop " + "cameraPos "+ str(xMid) + " groundTruth "\
-                                + str(xGroundTruthPos) + " " +str(screenCenterX))
+                                + str(xMid) + " " +str(screenCenterX))
         messageToSend["direction"] = "stop"
         messageToSend["reason"] = "Object in center of Frame"
         currentDirection = "stop"
@@ -141,7 +134,8 @@ def prepareMessageToSend(bBoxTrack):
     return False,None
 
 def emergencyStop():
-    global robotControls, videoLatency, currentDirection
+    global robotControls, videoLatency, currentDirection, stopPos
+    stopPos = []
     messageToSend = {}
     messageToSend["reason"] = "Object Not In Frame"
     messageToSend["type"] = "mobility"
