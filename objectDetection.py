@@ -159,7 +159,7 @@ def moveRobot(bBoxTrack):
     messageToSend["stopIn"] = stopIn
     messageToSend["pixelPerMS_H"] = pixelPerMS_H
     messageToSend["turn"] = currentDirection
-    if(startMovement == True)
+    if(startMovement == True):
         start_time = threading.Timer(stopIn,stopOnCenter)
         start_time.start()
     return startMovement,messageToSend
