@@ -26,7 +26,7 @@ currentDirection = "stop"
 prevDirection = "stop"
 movementEndTime = 0
 previousPos = []
-pixelPerMilliseconds = 0.0005
+pixelPerMS_H = 0.0005
 stopPos = []
 
 def createNewTracker():
@@ -81,9 +81,72 @@ def trackObject(img_array,toDetect):
 def printStatus(msg):
     print(msg,end = "\n")
 
-def prepareMessageToSend(bBoxTrack):
+def calibrateLatencyAndMovementValues(bBoxTrack):
+    global screenWidth, screenHeight, currentDirection, movementEndTime
+    global previousPos, videoLatency, stopPos, pixelPerMS_H
+    xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
+    xMidPrev,yMidPrev = 0,0
+    xMidStop,yMidStop = 0,0
+    if(len(previousPos)>0):
+        xMidPrev,yMidPrev = previousPos[0]+(previousPos[2]/2),previousPos[1]+(previousPos[3]/2)
+    if(len(stopPos) > 0):
+         xMidStop,yMidStop = stopPos[0]+(stopPos[2]/2),stopPos[1]+(stopPos[3]/2)
+    screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
+    if(len(previousPos) > 0 and abs(xMidPrev-xMid) > 1):
+        print("Diff ",abs(xMidPrev-xMid),currentDirection)
+    if(currentDirection == "stop" and len(previousPos) > 0):
+        print("Current Pos after stop",xMid,yMid)
+        if(abs(xMidPrev-xMid) < 5 and movementEndTime > 0):
+            videoLatency = (time.time() - movementEndTime)
+            print("Latency ", round((time.time() - movementEndTime),2))
+            if(len(stopPos) > 0 and (stopPos[0]-xMid) > 0):
+                diffPixel = abs(stopPos[0]-xMid)
+                print("pixel diff " , diffPixel)
+                pixelPerMS_H = (pixelPerMS_H + (videoLatency/diffPixel))/2
+                print("pixeltomillisecondcount" , pixelPerMS_H, (videoLatency/diffPixel))
+
+def getRobotMovementDetails(bBoxTrack):
     global screenWidth, screenHeight, currentDirection, movementEndTime, prevDirection
-    global previousPos, videoLatency, stopPos, pixelPerMilliseconds
+    global previousPos, videoLatency, stopPos, pixelPerMS_H
+    xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
+    screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
+    calibrateLatencyAndMovementValues(bBoxTrack)
+    previousPos = bBoxTrack[:]
+    xMidGroundTruth, yMidGroundTruth = xMid,yMid
+    stopIn= 0
+    print("movementEndTime" , movementEndTime,videoLatency,time.time())
+    if(currentDirection == "right"):
+        xMidGroundTruth -= 60
+    elif(currentDirection == "left"):
+        xMidGroundTruth += 60
+    elif(currentDirection == "stop" and movementEndTime > 0 and \
+    (movementEndTime + videoLatency) < time.time()):
+        if(prevDirection == "left"):
+            xMidGroundTruth += ( 2000 * (time.time() - (movementEndTime + videoLatency)) )
+        elif(prevDirection == "right"):
+            xMidGroundTruth -= ( 2000 * (time.time() - (movementEndTime + videoLatency)) )
+    print("Ground Truth", xMidGroundTruth , "Camera Pos", xMid, currentDirection)
+    startMovement = False
+    if(abs(xMidGroundTruth - screenCenterX) > (screenWidth/10)):
+        stopIn = (abs(xMidGroundTruth - screenCenterX)*pixelPerMS_H)
+        if(xMidGroundTruth > screenCenterX and currentDirection != "right"):
+            printStatus("right " + "cameraPos "+ str(xMidGroundTruth) +" "+ str(stopIn) \
+            + " " +str(screenCenterX))
+            currentDirection = "right"
+            stopPos = []
+            startMovement = True
+        elif(xMidGroundTruth < screenCenterX and currentDirection != "left"):
+            printStatus("left " + "cameraPos "+ str(xMidGroundTruth) +" "+ str(stopIn) \
+            + " " +str(screenCenterX))
+            currentDirection = "left"
+            stopPos = []
+            startMovement = True
+    return startMovement, stopIn, xMidGroundTruth, xMid
+
+def moveRobot(bBoxTrack):
+    global currentDirection, videoLatency, pixelPerMS_H
+    printStatus("bBoxTrack "+str(bBoxTrack))
+    startMovement, stopIn, xMidGroundTruth, xMid = getRobotMovementDetails(bBoxTrack)
     messageToSend = {}
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "no"
@@ -91,60 +154,15 @@ def prepareMessageToSend(bBoxTrack):
     messageToSend["rads"] = 0.5
     messageToSend["turn"] = ""
     messageToSend["latency"] = videoLatency
-    printStatus("bBoxTrack "+str(bBoxTrack))
-    xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
-    screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
-    if(len(previousPos) > 0 and abs(previousPos[0]-xMid) > 1):
-        print("Diff ",abs(previousPos[0]-xMid),currentDirection)
-    if(currentDirection == "stop" and len(previousPos) > 0):
-        print("Current Pos after stop",xMid,yMid)
-        if(abs(previousPos[0]-xMid) < 5 and movementEndTime > 0):
-#             videoLatency = (time.time() - movementEndTime)
-            print("Latency ", round(videoLatency,2))
-            if(len(stopPos) > 0 and (stopPos[0]-xMid) > 0):
-                diffPixel = abs(stopPos[0]-xMid)
-                print("pixel diff " , diffPixel)
-                pixelPerMilliseconds = (pixelPerMilliseconds + (videoLatency/diffPixel))/2
-                print("pixeltomillisecondcount" , pixelPerMilliseconds, (videoLatency/diffPixel))
-    previousPos = [xMid,yMid]
-    xGroundTruth, yGroundTruth = xMid,yMid
-    print("movementEndTime" , movementEndTime,videoLatency,time.time())
-    if(currentDirection == "right"):
-        xGroundTruth -= 60
-    elif(currentDirection == "left"):
-        xGroundTruth += 60
-    elif(currentDirection == "stop" and movementEndTime > 0 and \
-    (movementEndTime + videoLatency) < time.time()):
-        if(prevDirection == "left"):
-            xGroundTruth += ( 2000 * (time.time() - (movementEndTime + videoLatency)) )
-        else:
-            xGroundTruth -= ( 2000 * (time.time() - (movementEndTime + videoLatency)) )
-    print("Ground Truth", xGroundTruth , "Camera Pos", xMid, currentDirection)
-    messageToSend["xPos"] = xMid
-    messageToSend["xGroundTruthPos"] = xGroundTruth
-    if(abs(xGroundTruth - screenCenterX) > (screenWidth/10)):
-        stopIn = (abs(xGroundTruth - screenCenterX)*pixelPerMilliseconds)
-        messageToSend["stopIn"] = stopIn
-        messageToSend["pixelPerMilliseconds"] = pixelPerMilliseconds
-        if(xGroundTruth > screenCenterX and currentDirection == "stop"):
-            printStatus("right " + "cameraPos "+ str(xGroundTruth) +" "+ str(stopIn) \
-            + " " +str(screenCenterX))
-            currentDirection = "right"
-            stopPos = []
-            messageToSend["turn"] = currentDirection
-            start_time = threading.Timer(stopIn,stopOnCenter)
-            start_time.start()
-            return True, messageToSend
-        elif(xGroundTruth < screenCenterX and currentDirection == "stop"):
-            printStatus("left " + "cameraPos "+ str(xGroundTruth) +" "+ str(stopIn) \
-            + " " +str(screenCenterX))
-            currentDirection = "left"
-            stopPos = []
-            messageToSend["turn"] = currentDirection
-            start_time = threading.Timer(stopIn,stopOnCenter)
-            start_time.start()
-            return True, messageToSend
-    return False,None
+    messageToSend["xMid"] = xMid
+    messageToSend["xMidGroundTruth"] = xMidGroundTruth
+    messageToSend["stopIn"] = stopIn
+    messageToSend["pixelPerMS_H"] = pixelPerMS_H
+    messageToSend["turn"] = currentDirection
+    if(startMovement == True)
+        start_time = threading.Timer(stopIn,stopOnCenter)
+        start_time.start()
+    return startMovement,messageToSend
 
 def stopOnCenter():
     global robotControls, videoLatency, currentDirection, stopPos, previousPos, prevDirection
@@ -190,10 +208,10 @@ def emergencyStop():
 
 def trackSubjectUsingRobot(bBoxTrack):
     global robotControls
-    toSend, data= prepareMessageToSend(bBoxTrack)
+    toSend, messageToSend= moveRobot(bBoxTrack)
     if(toSend):
-        data["requestTime"] = time.time()
-        robotControls.send(data)
+        messageToSend["requestTime"] = time.time()
+        robotControls.send(messageToSend)
 
 def gen_frames(toDetect):
     global frame, conditionObj, GUIMode, camera, tracker, currentDirection, previousPos
