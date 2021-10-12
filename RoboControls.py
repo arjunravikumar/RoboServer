@@ -5,7 +5,7 @@ import json
 
 class RoboControls:
     ws = None
-
+    currentMotion = "stop"
     def startWS(self):
         self.ws = websocket.WebSocketApp("ws://192.168.1.166:8888",
                                   on_message = self.on_message,
@@ -36,6 +36,8 @@ class RoboControls:
         try:
             def run(self):
                 self.ws.send(json.dumps(message))
-            _thread.start_new_thread(run, (self,))
+            if(self.currentMotion != (message["direction"]+"-"+message["turn"])):
+                self.currentMotion = (message["direction"]+"-"+message["turn"])
+                _thread.start_new_thread(run, (self,))
         except:
           print("An exception occurred")
