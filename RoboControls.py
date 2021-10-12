@@ -33,6 +33,9 @@ class RoboControls:
 
     def send(self,message):
         print("Message Send",message)
-        def run(self):
-            self.ws.send(json.dumps(message))
-        _thread.start_new_thread(run, (self,))
+        try:
+            def run(self):
+                self.ws.send(json.dumps(message))
+            _thread.start_new_thread(run, (self,))
+        except:
+          print("An exception occurred")
