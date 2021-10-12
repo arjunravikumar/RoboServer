@@ -33,9 +33,9 @@ class RoboControls:
 
     def send(self,message):
         print("Message Send",message)
+        def run(self):
+            self.ws.send(json.dumps(message))
         try:
-            def run(self):
-                self.ws.send(json.dumps(message))
             if(self.currentMotion != (message["direction"]+"-"+message["turn"])):
                 self.currentMotion = (message["direction"]+"-"+message["turn"])
                 _thread.start_new_thread(run, (self,))
