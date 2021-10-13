@@ -127,8 +127,9 @@ def getRobotMovementDetails(bBoxTrack):
             xMidGroundTruth -= ( (1/MSPerPixel_H) * (time.time() - movementEndTime ) )
     print("Ground Truth", xMidGroundTruth , "Camera Pos", xMid, currentDirection)
     startMovement = False
-    if(abs(xMidGroundTruth - screenCenterX) > (screenWidth/10) and \
-    (movementEndTime + videoLatency) > time.time()):
+    if(abs(xMidGroundTruth - screenCenterX) > (screenWidth/10)):
+        if(movementEndTime > 0 and (movementEndTime + videoLatency) < time.time()):
+            return False, 0, 0, 0
         stopIn = (abs(xMidGroundTruth - screenCenterX)*MSPerPixel_H)
         if(xMidGroundTruth > screenCenterX and currentDirection != "right"):
             printStatus("right " + "cameraPos "+ str(xMidGroundTruth) +" "+ str(stopIn) \
