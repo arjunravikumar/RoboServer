@@ -26,7 +26,7 @@ currentDirection = "stop"
 prevDirection = "stop"
 movementEndTime = 0
 previousPos = []
-pixelPerMS_H = 0.0002
+pixelPerMS_H = 0.0005
 stopPos = []
 
 def createNewTracker():
@@ -97,7 +97,7 @@ def calibrateLatencyAndMovementValues(bBoxTrack):
     if(currentDirection == "stop" and len(previousPos) > 0):
         print("Current Pos after stop",xMid,yMid)
         if(abs(xMidPrev-xMid) < 5 and movementEndTime > 0):
-            videoLatency = (time.time() - movementEndTime)
+#             videoLatency = (time.time() - movementEndTime)
             print("Latency ", round((time.time() - movementEndTime),2))
             if(len(stopPos) > 0 and (stopPos[0]-xMid) > 0):
                 diffPixel = abs(stopPos[0]-xMid)
