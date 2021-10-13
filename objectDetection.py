@@ -26,7 +26,7 @@ currentDirection = "stop"
 prevDirection = "stop"
 movementEndTime = 0
 previousPos = []
-pixelPerMS_H = 0.0005
+MSPerPixel_H = 0.0005
 stopPos = []
 
 def createNewTracker():
@@ -83,7 +83,7 @@ def printStatus(msg):
 
 def calibrateLatencyAndMovementValues(bBoxTrack):
     global screenWidth, screenHeight, currentDirection, movementEndTime
-    global previousPos, videoLatency, stopPos, pixelPerMS_H
+    global previousPos, videoLatency, stopPos, MSPerPixel_H
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     xMidPrev,yMidPrev = 0,0
     xMidStop,yMidStop = 0,0
@@ -102,12 +102,12 @@ def calibrateLatencyAndMovementValues(bBoxTrack):
             if(len(stopPos) > 0 and (stopPos[0]-xMid) > 0):
                 diffPixel = abs(stopPos[0]-xMid)
                 print("pixel diff " , diffPixel)
-                pixelPerMS_H = (pixelPerMS_H + (videoLatency/diffPixel))/2
-                print("pixeltomillisecondcount" , pixelPerMS_H, (videoLatency/diffPixel))
+                MSPerPixel_H = (MSPerPixel_H + (videoLatency/diffPixel))/2
+                print("pixeltomillisecondcount" , MSPerPixel_H, (videoLatency/diffPixel))
 
 def getRobotMovementDetails(bBoxTrack):
     global screenWidth, screenHeight, currentDirection, movementEndTime, prevDirection
-    global previousPos, videoLatency, stopPos, pixelPerMS_H
+    global previousPos, videoLatency, stopPos, MSPerPixel_H
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     calibrateLatencyAndMovementValues(bBoxTrack)
@@ -122,13 +122,13 @@ def getRobotMovementDetails(bBoxTrack):
     (movementEndTime + videoLatency) < time.time()):
         print("MovementEndTime :" , movementEndTime + videoLatency," CurrTime :",time.time())
         if(prevDirection == "left"):
-            xMidGroundTruth += ( 200 * (time.time() - movementEndTime) )
+            xMidGroundTruth += ( (1/MSPerPixel_H) * (time.time() - movementEndTime) )
         elif(prevDirection == "right"):
-            xMidGroundTruth -= ( 200 * (time.time() - movementEndTime ) )
+            xMidGroundTruth -= ( (1/MSPerPixel_H) * (time.time() - movementEndTime ) )
     print("Ground Truth", xMidGroundTruth , "Camera Pos", xMid, currentDirection)
     startMovement = False
-    if(abs(xMidGroundTruth - screenCenterX) > (screenWidth/10)):
-        stopIn = (abs(xMidGroundTruth - screenCenterX)*pixelPerMS_H)
+    if(abs(xMidGroundTruth - screenCenterX) > (screenWidth/10) and (movementEndTime + videoLatency) < time.time()):
+        stopIn = (abs(xMidGroundTruth - screenCenterX)*MSPerPixel_H)
         if(xMidGroundTruth > screenCenterX and currentDirection != "right"):
             printStatus("right " + "cameraPos "+ str(xMidGroundTruth) +" "+ str(stopIn) \
             + " " +str(screenCenterX))
@@ -144,7 +144,7 @@ def getRobotMovementDetails(bBoxTrack):
     return startMovement, stopIn, xMidGroundTruth, xMid
 
 def moveRobot(bBoxTrack):
-    global currentDirection, videoLatency, pixelPerMS_H
+    global currentDirection, videoLatency, MSPerPixel_H
     printStatus("bBoxTrack "+str(bBoxTrack))
     startMovement, stopIn, xMidGroundTruth, xMid = getRobotMovementDetails(bBoxTrack)
     messageToSend = {}
@@ -157,7 +157,7 @@ def moveRobot(bBoxTrack):
     messageToSend["xMid"] = xMid
     messageToSend["xMidGroundTruth"] = xMidGroundTruth
     messageToSend["stopIn"] = stopIn
-    messageToSend["pixelPerMS_H"] = pixelPerMS_H
+    messageToSend["MSPerPixel_H"] = MSPerPixel_H
     messageToSend["turn"] = currentDirection
     if(startMovement == True):
         start_time = threading.Timer(stopIn,stopOnCenter)
