@@ -232,8 +232,8 @@ def gen_frames(toDetect):
         print("Object Location ",bBoxDetect)
         if(objectFound):
             trackSubjectUsingRobot(bBoxDetect)
-#         elif(currentDirection != "stop"):
-#             emergencyStop()
+        elif(currentDirection != "stop"):
+            emergencyStop()
         if(GUIMode):
             img_array = jetson.utils.cudaToNumpy(img)
             cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
