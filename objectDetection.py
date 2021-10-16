@@ -28,6 +28,8 @@ movementEndTime = 0
 previousPos = []
 MSPerPixel_H = 0.0005
 stopPos = []
+calibrationMode = True
+calibrationStartTime = 0
 
 def createNewTracker():
     global trackerType,tracker
@@ -80,6 +82,53 @@ def trackObject(img_array,toDetect):
 
 def printStatus(msg):
     print(msg,end = "\n")
+
+def calibrateMovement(direction,turn):
+    global robotControls, videoLatency, MSPerPixel_H
+    messageToSend = {}
+    messageToSend["reason"] = "Calibration "+direction+" "+ turn
+    messageToSend["type"] = "mobility"
+    messageToSend["direction"] = direction
+    messageToSend["speed"] = 100
+    messageToSend["rads"] = 0.5
+    messageToSend["turn"] = turn
+    messageToSend["latency"] = videoLatency
+    messageToSend["xMid"] = xMid
+    messageToSend["xMidGroundTruth"] = xMidGroundTruth
+    messageToSend["stopIn"] = 0.1
+    messageToSend["MSPerPixel_H"] = MSPerPixel_H
+    messageToSend["requestTime"] = time.time()
+    robotControls.send(messageToSend)
+    start_time = threading.Timer(0.1,stopOnCenter)
+    start_time.start()
+
+def stopCalibrationMovement()
+    global robotControls, videoLatency, MSPerPixel_H
+    messageToSend = {}
+    messageToSend["reason"] = "Calibration Stop"
+    messageToSend["type"] = "mobility"
+    messageToSend["direction"] = "no"
+    messageToSend["speed"] = 100
+    messageToSend["rads"] = 0.5
+    printStatus("stop")
+    messageToSend["direction"] = "stop"
+    messageToSend["turn"] = ""
+    messageToSend["requestTime"] = time.time()
+    messageToSend["latency"] = videoLatency
+    messageToSend["MSPerPixel_H"] = MSPerPixel_H
+    robotControls.send(messageToSend)
+
+def calibrateLatencyAndMovementValues(bBoxTrack,currTime):
+    global previousPos, videoLatency, stopPos, MSPerPixel_H
+    calibrateMovement("turn","left")
+    calibrateMovement("turn","right")
+    calibrateMovement("turn","right")
+    calibrateMovement("turn","left")
+    calibrateMovement("forward","noturn")
+    calibrateMovement("backward","noturn")
+    calibrateMovement("forward","noturn")
+    calibrateMovement("backward","noturn")
+
 
 def calibrateLatencyAndMovementValues(bBoxTrack):
     global screenWidth, screenHeight, currentDirection, movementEndTime
@@ -217,6 +266,7 @@ def trackSubjectUsingRobot(bBoxTrack):
 
 def gen_frames(toDetect):
     global frame, conditionObj, GUIMode, camera, tracker, currentDirection, previousPos
+    global calibrationMode
     objectFound             = False
     resetTracking           = True
     bBoxTrack               = None
@@ -230,27 +280,31 @@ def gen_frames(toDetect):
         bBoxTrack = bBoxDetect
         print("Object Found ",objectFound)
         print("Object Location ",bBoxDetect)
-        if(objectFound):
-            trackSubjectUsingRobot(bBoxDetect)
-        elif(currentDirection != "stop"):
-            emergencyStop()
-        if(GUIMode):
-            img_array = jetson.utils.cudaToNumpy(img)
-            cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
-                        cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
-            cv2.putText(img_array,'BBOX Track: '+str(bBoxTrack), (10,600), \
-                        cv2.FONT_HERSHEY_SIMPLEX,0.4,(255,255,255),2)
-            cv2.putText(img_array,'BBOX Detect: '+str(bBoxDetect), (10,550), \
-                        cv2.FONT_HERSHEY_SIMPLEX,0.4,(255,255,255),2)
-            ret, buffer = cv2.imencode('.jpg', img_array)
-            frame = buffer.tobytes()
-            with conditionObj:
-                conditionObj.notifyAll()
+        if(calibrationMode):
+            if(objectFound):
+                calibrateLatencyAndMovementValues(bBoxDetect,time.time()
         else:
-            new_frame_time = time.time()
-            fps = 1/(new_frame_time-prev_frame_time)
-            prev_frame_time = new_frame_time
-            printStatus("FPS "+str(fps))
+            if(objectFound):
+                trackSubjectUsingRobot(bBoxDetect)
+            elif(currentDirection != "stop"):
+                emergencyStop()
+            if(GUIMode):
+                img_array = jetson.utils.cudaToNumpy(img)
+                cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
+                            cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
+                cv2.putText(img_array,'BBOX Track: '+str(bBoxTrack), (10,600), \
+                            cv2.FONT_HERSHEY_SIMPLEX,0.4,(255,255,255),2)
+                cv2.putText(img_array,'BBOX Detect: '+str(bBoxDetect), (10,550), \
+                            cv2.FONT_HERSHEY_SIMPLEX,0.4,(255,255,255),2)
+                ret, buffer = cv2.imencode('.jpg', img_array)
+                frame = buffer.tobytes()
+                with conditionObj:
+                    conditionObj.notifyAll()
+            else:
+                new_frame_time = time.time()
+                fps = 1/(new_frame_time-prev_frame_time)
+                prev_frame_time = new_frame_time
+                printStatus("FPS "+str(fps))
 
 def getFrames():
     global frame, conditionObj
