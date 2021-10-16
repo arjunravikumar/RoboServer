@@ -120,14 +120,24 @@ def stopCalibrationMovement()
 
 def calibrateLatencyAndMovementValues(bBoxTrack,currTime):
     global previousPos, videoLatency, stopPos, MSPerPixel_H
-    calibrateMovement("turn","left")
-    calibrateMovement("turn","right")
-    calibrateMovement("turn","right")
-    calibrateMovement("turn","left")
-    calibrateMovement("forward","noturn")
-    calibrateMovement("backward","noturn")
-    calibrateMovement("forward","noturn")
-    calibrateMovement("backward","noturn")
+    diffTime = 0.5
+    if(calibrationStartTime == 0):
+        calibrationStartTime = currTime
+        calibrateMovement("turn","left")
+    if(currTime > (calibrationStartTime + diffTime)):
+        calibrateMovement("turn","right")
+    if(currTime > (calibrationStartTime + (diffTime * 2 ))):
+        calibrateMovement("turn","right")
+    if(currTime > (calibrationStartTime + (diffTime * 3 ))):
+        calibrateMovement("turn","left")
+    if(currTime > (calibrationStartTime + (diffTime * 4 ))):
+        calibrateMovement("forward","noturn")
+    if(currTime > (calibrationStartTime + (diffTime * 5 ))):
+        calibrateMovement("backward","noturn")
+    if(currTime > (calibrationStartTime + (diffTime * 6 ))):
+        calibrateMovement("forward","noturn")
+    if(currTime > (calibrationStartTime + (diffTime * 7 ))):
+        calibrateMovement("backward","noturn")
 
 
 def calibrateLatencyAndMovementValues(bBoxTrack):
