@@ -21,12 +21,12 @@ robotControls = None
 screenWidth = 1280
 screenHeight = 720
 GUIMode = True
-videoLatency = 0.5
+videoLatency = 0.1
 currentDirection = "stop"
 prevDirection = "stop"
 movementEndTime = 0
 previousPos = []
-MSPerPixel_H = 0.0003
+MSPerPixel_H = 0.00044
 stopPos = []
 
 def createNewTracker():
@@ -102,7 +102,7 @@ def calibrateLatencyAndMovementValues(bBoxTrack):
             if(len(stopPos) > 0 and (stopPos[0]-xMid) > 0):
                 diffPixel = abs(stopPos[0]-xMid)
                 print("pixel diff " , diffPixel)
-                MSPerPixel_H = (MSPerPixel_H + (videoLatency/diffPixel))/2
+#                 MSPerPixel_H = (MSPerPixel_H + (videoLatency/diffPixel))/2
                 print("pixeltomillisecondcount" , MSPerPixel_H, (videoLatency/diffPixel))
 
 def getRobotMovementDetails(bBoxTrack):
