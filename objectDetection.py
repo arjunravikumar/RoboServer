@@ -115,6 +115,7 @@ def getRobotMovementDetails(bBoxTrack):
     global MSPerPixel_V, pixelPerFrame_H, pixelPerFrame_V
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     objectHeight,objectWidth = bBoxTrack[2],bBoxTrack[3]
+    originalObjectHeight,originalObjectWidth = originalObjectDimension[0],originalObjectDimension[0]
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     calibrateLatencyAndMovementValues(bBoxTrack)
     previousPos = bBoxTrack[:]
@@ -143,7 +144,7 @@ def getRobotMovementDetails(bBoxTrack):
     ,currentDirection,prevDirection)
     print("Ground Truth H", xMidGroundTruth , "Camera Pos", xMid, currentDirection)
     startMovement = False
-    print("Ground Truth V", objectGroundTruthHeight, "original height", objectHeight , "ratio", abs((objectGroundTruthHeight/objectHeight) -1))
+    print("Ground Truth V", objectGroundTruthHeight, "original height", originalObjectHeight , "ratio", abs((objectGroundTruthHeight/objectHeight) -1))
     if((movementEndTime + videoLatency) < time.time()):
         if(abs(xMidGroundTruth - screenCenterX) > (screenWidth/10) and\
         (movementEndTime + videoLatency) < time.time()):
@@ -160,14 +161,14 @@ def getRobotMovementDetails(bBoxTrack):
                 currentDirection = "left"
                 stopPos = []
                 startMovement = True
-        elif(abs((objectGroundTruthHeight/objectHeight) -1) > 0.05):
-            stopIn = abs(objectGroundTruthHeight - objectHeight)
+        elif(abs((objectGroundTruthHeight/originalObjectHeight) -1) > 0.05):
+            stopIn = abs(objectGroundTruthHeight - originalObjectHeight)
             stopIn = stopIn * MSPerPixel_V
-            if(objectGroundTruthHeight < objectHeight and currentDirection != "forward"):
+            if(objectGroundTruthHeight < originalObjectHeight and currentDirection != "forward"):
                 currentDirection = "forward"
                 stopPos = []
                 startMovement = True
-            elif(objectGroundTruthHeight > objectHeight and currentDirection != "backward"):
+            elif(objectGroundTruthHeight > originalObjectHeight and currentDirection != "backward"):
                 currentDirection = "backward"
                 stopPos = []
                 startMovement = True
