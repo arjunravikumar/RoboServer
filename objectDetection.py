@@ -27,11 +27,11 @@ prevDirection = "stop"
 movementEndTime = 0
 previousPos = []
 MSPerPixel_H = 0.0004
-MSPerPixel_V = 0.00001
+MSPerPixel_V = 0.02
 stopPos = []
 originalObjectDimension = []
 pixelPerFrame_H = 60
-pixelPerFrame_V = 60
+pixelPerFrame_V = 10
 
 def createNewTracker():
     global trackerType,tracker
