@@ -141,8 +141,9 @@ def getRobotMovementDetails(bBoxTrack):
             objectGroundTruthHeight -= ( (1/MSPerPixel_V) * (time.time() - movementEndTime ) )
     print("MovementEndTime :" , movementEndTime + videoLatency," CurrTime :",time.time()\
     ,currentDirection,prevDirection)
-    print("Ground Truth", xMidGroundTruth , "Camera Pos", xMid, currentDirection)
+    print("Ground Truth H", xMidGroundTruth , "Camera Pos", xMid, currentDirection)
     startMovement = False
+    print("Ground Truth V", objectGroundTruthHeight, "original height", objectHeight , "ratio", abs((objectGroundTruthHeight/objectHeight) -1))
     if((movementEndTime + videoLatency) < time.time()):
         if(abs(xMidGroundTruth - screenCenterX) > (screenWidth/10) and\
         (movementEndTime + videoLatency) < time.time()):
