@@ -27,7 +27,11 @@ prevDirection = "stop"
 movementEndTime = 0
 previousPos = []
 MSPerPixel_H = 0.0005
+MSPerPixel_V = 0.00001
 stopPos = []
+originalObjectDimension = []
+pixelPerFrame_H = 60
+pixelPerFrame_V = 60
 
 def createNewTracker():
     global trackerType,tracker
@@ -107,42 +111,65 @@ def calibrateLatencyAndMovementValues(bBoxTrack):
 
 def getRobotMovementDetails(bBoxTrack):
     global screenWidth, screenHeight, currentDirection, movementEndTime, prevDirection
-    global previousPos, videoLatency, stopPos, MSPerPixel_H
+    global previousPos, videoLatency, stopPos, MSPerPixel_H, originalObjectDimension
+    global MSPerPixel_V, pixelPerFrame_H, pixelPerFrame_V
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
+    objectHeight,objectWidth = bBoxTrack[2],bBoxTrack[3]
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     calibrateLatencyAndMovementValues(bBoxTrack)
     previousPos = bBoxTrack[:]
     xMidGroundTruth, yMidGroundTruth = xMid,yMid
+    objectGroundTruthHeight, objectGroundTruthWidth = objectHeight,objectWidth
     stopIn= 0
     if(currentDirection == "right"):
-        xMidGroundTruth -= 60
+        xMidGroundTruth -= pixelPerFrame_H
     elif(currentDirection == "left"):
-        xMidGroundTruth += 60
+        xMidGroundTruth += pixelPerFrame_H
+    elif(currentDirection == "forward"):
+        objectGroundTruthHeight += pixelPerFrame_V
+    elif(currentDirection == "backward"):
+        objectGroundTruthHeight += pixelPerFrame_V
     elif(currentDirection == "stop" and \
     (movementEndTime + videoLatency) > time.time()):
         if(prevDirection == "left"):
             xMidGroundTruth += ( (1/MSPerPixel_H) * (time.time() - movementEndTime) )
         elif(prevDirection == "right"):
             xMidGroundTruth -= ( (1/MSPerPixel_H) * (time.time() - movementEndTime ) )
+        elif(prevDirection == "forward"):
+            objectGroundTruthHeight += ( (1/MSPerPixel_V) * (time.time() - movementEndTime) )
+        elif(prevDirection == "backward"):
+            objectGroundTruthHeight -= ( (1/MSPerPixel_V) * (time.time() - movementEndTime ) )
     print("MovementEndTime :" , movementEndTime + videoLatency," CurrTime :",time.time()\
     ,currentDirection,prevDirection)
     print("Ground Truth", xMidGroundTruth , "Camera Pos", xMid, currentDirection)
     startMovement = False
-    if(abs(xMidGroundTruth - screenCenterX) > (screenWidth/10) and\
-     (movementEndTime + videoLatency) < time.time()):
-        stopIn = (abs(xMidGroundTruth - screenCenterX)*MSPerPixel_H)
-        if(xMidGroundTruth > screenCenterX and currentDirection != "right"):
-            printStatus("right " + "cameraPos "+ str(xMidGroundTruth) +" "+ str(stopIn) \
-            + " " +str(screenCenterX))
-            currentDirection = "right"
-            stopPos = []
-            startMovement = True
-        elif(xMidGroundTruth < screenCenterX and currentDirection != "left"):
-            printStatus("left " + "cameraPos "+ str(xMidGroundTruth) +" "+ str(stopIn) \
-            + " " +str(screenCenterX))
-            currentDirection = "left"
-            stopPos = []
-            startMovement = True
+    if((movementEndTime + videoLatency) < time.time())
+        if(abs(xMidGroundTruth - screenCenterX) > (screenWidth/10) and\
+         (movementEndTime + videoLatency) < time.time()):
+            stopIn = (abs(xMidGroundTruth - screenCenterX)*MSPerPixel_H)
+            if(xMidGroundTruth > screenCenterX and currentDirection != "right"):
+                printStatus("right " + "cameraPos "+ str(xMidGroundTruth) +" "+ str(stopIn) \
+                + " " +str(screenCenterX))
+                currentDirection = "right"
+                stopPos = []
+                startMovement = True
+            elif(xMidGroundTruth < screenCenterX and currentDirection != "left"):
+                printStatus("left " + "cameraPos "+ str(xMidGroundTruth) +" "+ str(stopIn) \
+                + " " +str(screenCenterX))
+                currentDirection = "left"
+                stopPos = []
+                startMovement = True
+         elif(abs((objectGroundTruthHeight/objectHeight) -1) > 0.05):
+            stopIn = abs(objectGroundTruthHeight - objectHeight)
+            stopIn = stopIn * MSPerPixel_V
+            if(objectGroundTruthHeight < objectHeight and currentDirection != "forward"):
+                currentDirection = "forward"
+                stopPos = []
+                startMovement = True
+            elif(objectGroundTruthHeight > objectHeight and currentDirection != "backward"):
+                currentDirection = "backward"
+                stopPos = []
+                startMovement = True
     return startMovement, stopIn, xMidGroundTruth, xMid
 
 def moveRobot(bBoxTrack):
@@ -151,7 +178,7 @@ def moveRobot(bBoxTrack):
     startMovement, stopIn, xMidGroundTruth, xMid = getRobotMovementDetails(bBoxTrack)
     messageToSend = {}
     messageToSend["type"] = "mobility"
-    messageToSend["direction"] = "no"
+    messageToSend["direction"] = currentDirection
     messageToSend["speed"] = 100
     messageToSend["rads"] = 0.5
     messageToSend["turn"] = ""
@@ -217,6 +244,7 @@ def trackSubjectUsingRobot(bBoxTrack):
 
 def gen_frames(toDetect):
     global frame, conditionObj, GUIMode, camera, tracker, currentDirection, previousPos
+    global originalObjectDimension
     objectFound             = False
     resetTracking           = True
     bBoxTrack               = None
@@ -231,6 +259,8 @@ def gen_frames(toDetect):
         print("Object Found ",objectFound)
         print("Object Location ",bBoxDetect)
         if(objectFound):
+            if(len(originalObjectDimension) == 0):
+                originalObjectDimension = [bBoxDetect[2],bBoxDetect[3]]
             trackSubjectUsingRobot(bBoxDetect)
         elif(currentDirection != "stop"):
             emergencyStop()
