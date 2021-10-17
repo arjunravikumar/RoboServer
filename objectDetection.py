@@ -161,7 +161,7 @@ def getRobotMovementDetails(bBoxTrack):
                 currentDirection = "left"
                 stopPos = []
                 startMovement = True
-        elif(abs((objectGroundTruthHeight/originalObjectHeight) -1) > 0.1):
+        elif(abs(objectGroundTruthHeight - originalObjectHeight) > 10):
             stopIn = abs(objectGroundTruthHeight - originalObjectHeight)
             stopIn = stopIn * MSPerPixel_V
             if(objectGroundTruthHeight < originalObjectHeight and currentDirection != "forward"):
