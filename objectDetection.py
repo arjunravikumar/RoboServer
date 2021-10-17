@@ -144,7 +144,7 @@ def getRobotMovementDetails(bBoxTrack):
     ,currentDirection,prevDirection)
     print("Ground Truth H", xMidGroundTruth , "Camera Pos", xMid, currentDirection)
     startMovement = False
-    print("Ground Truth V", objectGroundTruthHeight, "original height", originalObjectHeight , "ratio", abs((objectGroundTruthHeight/objectHeight) -1))
+    print("Ground Truth V", objectGroundTruthHeight, "original height", originalObjectHeight , "ratio", (objectGroundTruthHeight/objectHeight))
     if((movementEndTime + videoLatency) < time.time()):
         if(abs(xMidGroundTruth - screenCenterX) > (screenWidth/10) and\
         (movementEndTime + videoLatency) < time.time()):
