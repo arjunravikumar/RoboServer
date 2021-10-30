@@ -142,17 +142,17 @@ def getRobotMovementDetails(bBoxTrack):
     ,currentDirection,prevDirection)
     print("Ground Truth H", xMidGroundTruth , "Camera Pos", xMid, currentDirection)
     startMovement = False
-    if((movementEndTime + videoLatency) < time.time()):
+    if((movementEndTime + videoLatency) < time.time() and currentDirection == "stop"):
         if(abs(xMidGroundTruth - screenCenterX) > (screenWidth/10) and\
         (movementEndTime + videoLatency) < time.time()):
             stopIn = (abs(xMidGroundTruth - screenCenterX)*MSPerPixel_H)
-            if(xMidGroundTruth > screenCenterX and currentDirection != "right"):
+            if(xMidGroundTruth > screenCenterX):
                 printStatus("right " + "cameraPos "+ str(xMidGroundTruth) +" "+ str(stopIn) \
                 + " " +str(screenCenterX))
                 currentDirection = "right"
                 stopPos = []
                 startMovement = True
-            elif(xMidGroundTruth < screenCenterX and currentDirection != "left"):
+            elif(xMidGroundTruth < screenCenterX):
                 printStatus("left " + "cameraPos "+ str(xMidGroundTruth) +" "+ str(stopIn) \
                 + " " +str(screenCenterX))
                 currentDirection = "left"
@@ -161,11 +161,11 @@ def getRobotMovementDetails(bBoxTrack):
         elif(abs(objectGroundTruthHeight - (screenHeight/2)) > screenHeight/50):
             stopIn = abs(objectGroundTruthHeight - (screenHeight/2))
             stopIn = stopIn * MSPerPixel_V
-            if(objectGroundTruthHeight < (screenHeight/2) and currentDirection != "forward"):
+            if(objectGroundTruthHeight < (screenHeight/2)):
                 currentDirection = "forward"
                 stopPos = []
                 startMovement = True
-            elif(objectGroundTruthHeight > (screenHeight/2) and currentDirection != "backward"):
+            elif(objectGroundTruthHeight > (screenHeight/2)):
                 currentDirection = "backward"
                 stopPos = []
                 startMovement = True
