@@ -29,7 +29,6 @@ previousPos = []
 MSPerPixel_H = 0.0004
 MSPerPixel_V = 5
 stopPos = []
-originalObjectDimension = []
 pixelPerFrame_H = 60
 pixelPerFrame_V = 10
 
@@ -111,11 +110,10 @@ def calibrateLatencyAndMovementValues(bBoxTrack):
 
 def getRobotMovementDetails(bBoxTrack):
     global screenWidth, screenHeight, currentDirection, movementEndTime, prevDirection
-    global previousPos, videoLatency, stopPos, MSPerPixel_H, originalObjectDimension
+    global previousPos, videoLatency, stopPos, MSPerPixel_H
     global MSPerPixel_V, pixelPerFrame_H, pixelPerFrame_V
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     objectHeight,objectWidth = bBoxTrack[2],bBoxTrack[3]
-    originalObjectHeight,originalObjectWidth = originalObjectDimension[0],originalObjectDimension[0]
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
     calibrateLatencyAndMovementValues(bBoxTrack)
     previousPos = bBoxTrack[:]
@@ -144,7 +142,6 @@ def getRobotMovementDetails(bBoxTrack):
     ,currentDirection,prevDirection)
     print("Ground Truth H", xMidGroundTruth , "Camera Pos", xMid, currentDirection)
     startMovement = False
-    print("Ground Truth V", objectGroundTruthHeight, "original height", originalObjectHeight , "ratio", (objectGroundTruthHeight/originalObjectHeight))
     if((movementEndTime + videoLatency) < time.time()):
         if(abs(xMidGroundTruth - screenCenterX) > (screenWidth/10) and\
         (movementEndTime + videoLatency) < time.time()):
@@ -161,14 +158,14 @@ def getRobotMovementDetails(bBoxTrack):
                 currentDirection = "left"
                 stopPos = []
                 startMovement = True
-        elif(abs(objectGroundTruthHeight - originalObjectHeight) > screenHeight/50):
-            stopIn = abs(objectGroundTruthHeight - originalObjectHeight)
+        elif(abs(objectGroundTruthHeight - (screenHeight/2)) > screenHeight/50):
+            stopIn = abs(objectGroundTruthHeight - (screenHeight/2))
             stopIn = stopIn * MSPerPixel_V
-            if(objectGroundTruthHeight < originalObjectHeight and currentDirection != "forward"):
+            if(objectGroundTruthHeight < (screenHeight/2) and currentDirection != "forward"):
                 currentDirection = "forward"
                 stopPos = []
                 startMovement = True
-            elif(objectGroundTruthHeight > originalObjectHeight and currentDirection != "backward"):
+            elif(objectGroundTruthHeight > (screenHeight/2) and currentDirection != "backward"):
                 currentDirection = "backward"
                 stopPos = []
                 startMovement = True
@@ -246,7 +243,6 @@ def trackSubjectUsingRobot(bBoxTrack):
 
 def gen_frames(toDetect):
     global frame, conditionObj, GUIMode, camera, tracker, currentDirection, previousPos
-    global originalObjectDimension
     objectFound             = False
     resetTracking           = True
     bBoxTrack               = None
@@ -261,8 +257,6 @@ def gen_frames(toDetect):
         print("Object Found ",objectFound)
         print("Object Location ",bBoxDetect)
         if(objectFound):
-            if(len(originalObjectDimension) == 0):
-                originalObjectDimension = [bBoxDetect[2],bBoxDetect[3]]
             trackSubjectUsingRobot(bBoxDetect)
         elif(currentDirection != "stop"):
             emergencyStop()
