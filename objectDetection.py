@@ -37,7 +37,7 @@ calibrationMovement = [("right",0.1),("wait",0.5),("left",0.1),("wait",0.5),("le
                        ("right",0.1),("wait",0.5),("forward",0.5),("wait",0.5),\
                        ("backward",0.5), ("wait",0.5), ("backward",0.5), ("wait",0.5), ("forward",0.5)]
 calibrationVariables = {"stopTime":0, "movementEndTime": 0, "stopPos" : [], "previousPos" :[],\
-                        "currentDirection" :""}
+                        "currentDirection" :"", previousDirection : "start"}
 
 def createNewTracker():
     global trackerType,tracker
