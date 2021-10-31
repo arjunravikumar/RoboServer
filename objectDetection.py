@@ -101,10 +101,9 @@ def calibrateMovement(direction,turn,stopIn):
     messageToSend["rads"] = 0.5
     messageToSend["turn"] = turn
     messageToSend["latency"] = videoLatency
-    messageToSend["xMid"] = xMid
-    messageToSend["xMidGroundTruth"] = xMidGroundTruth
     messageToSend["stopIn"] = 0.1
     messageToSend["MSPerPixel_H"] = MSPerPixel_H
+    messageToSend["MSPerPixel_V"] = MSPerPixel_V
     messageToSend["requestTime"] = time.time()
     robotControls.send(messageToSend)
     start_time = threading.Timer(stopIn,stopCalibrationMovement)
