@@ -31,6 +31,13 @@ MSPerPixel_V = 5
 stopPos = []
 pixelPerFrame_H = 60
 pixelPerFrame_V = 10
+calibrationMode = True
+calibrationStartTime = 0
+calibrationMovement = [("right",0.1),("wait",0.5),("left",0.1),("wait",0.5),("left",0.1),("wait",0.5),\
+                       ("right",0.1),("wait",0.5),("forward",0.5),("wait",0.5),\
+                       ("backward",0.5), ("wait",0.5), ("backward",0.5), ("wait",0.5), ("forward",0.5)]
+calibrationVariables = {"stopTime":0, "movementEndTime": 0, "stopPos" : [], "previousPos" :[],\
+                        "currentDirection" :""}
 
 def createNewTracker():
     global trackerType,tracker
@@ -84,29 +91,139 @@ def trackObject(img_array,toDetect):
 def printStatus(msg):
     print(msg,end = "\n")
 
+def calibrateMovement(direction,turn,stopIn):
+    global robotControls, videoLatency, MSPerPixel_H
+    messageToSend = {}
+    messageToSend["reason"] = "Calibration "+direction+" "+ turn
+    messageToSend["type"] = "mobility"
+    messageToSend["direction"] = direction
+    messageToSend["speed"] = 100
+    messageToSend["rads"] = 0.5
+    messageToSend["turn"] = turn
+    messageToSend["latency"] = videoLatency
+    messageToSend["xMid"] = xMid
+    messageToSend["xMidGroundTruth"] = xMidGroundTruth
+    messageToSend["stopIn"] = 0.1
+    messageToSend["MSPerPixel_H"] = MSPerPixel_H
+    messageToSend["requestTime"] = time.time()
+    robotControls.send(messageToSend)
+    start_time = threading.Timer(stopIn,stopCalibrationMovement)
+    start_time.start()
+
+def stopCalibrationMovement():
+    global robotControls, videoLatency, MSPerPixel_H
+    global calibrationVariables
+    messageToSend = {}
+    messageToSend["reason"] = "Calibration Stop"
+    messageToSend["type"] = "mobility"
+    messageToSend["direction"] = "no"
+    messageToSend["speed"] = 100
+    messageToSend["rads"] = 0.5
+    printStatus("stop")
+    messageToSend["direction"] = "stop"
+    messageToSend["turn"] = ""
+    messageToSend["requestTime"] = time.time()
+    messageToSend["latency"] = videoLatency
+    messageToSend["MSPerPixel_H"] = MSPerPixel_H
+    calibrationVariables["currentDirection"] = "stop"
+    calibrationVariables["stopPos"]
+    robotControls.send(messageToSend)
+
+def calibration(bBoxTrack,currTime):
+    global calibrationMode, calibrationStartTime, calibrationVariables
+    diffTime = 0.5
+    calibrateLatencyAndMovementValues(bBoxTrack)
+    calibrationVariables["previousPos"] = bBoxTrack[:]
+    if(calibrationStartTime == 0):
+        calibrationStartTime = currTime
+        calibrationVariables["previousDirection"] = "left1"
+        calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
+        calibrateMovement("turn", "left")
+    if(currTime > (calibrationStartTime + diffTime) \
+            and calibrationVariables["previousDirection"] == "left1"):
+        calibrationVariables["previousDirection"] = "right1"
+        calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
+        calibrateMovement("turn", "right")
+    if(currTime > (calibrationStartTime + (diffTime * 2 ))\
+            and calibrationVariables["previousDirection"] == "right1"):
+        calibrationVariables["previousDirection"] = "right2"
+        calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
+        calibrateMovement("turn", "right")
+    if(currTime > (calibrationStartTime + (diffTime * 3 ))\
+            and calibrationVariables["previousDirection"] == "right2"):
+        calibrationVariables["previousDirection"] = "left2"
+        calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
+        calibrateMovement("turn", "left")
+    if(currTime > (calibrationStartTime + (diffTime * 4 ))\
+            and calibrationVariables["previousDirection"] == "left2"):
+        calibrationVariables["previousDirection"] = "forward1"
+        calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
+        calibrateMovement("forward", "noturn")
+    if(currTime > (calibrationStartTime + (diffTime * 5 ))\
+            and calibrationVariables["previousDirection"] == "forward1"):
+        calibrationVariables["previousDirection"] = "backward1"
+        calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
+        calibrateMovement("backward", "noturn")
+    if(currTime > (calibrationStartTime + (diffTime * 6 ))\
+            and calibrationVariables["previousDirection"] == "backward1"):
+        calibrationVariables["previousDirection"] = "forward2"
+        calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
+        calibrateMovement("forward", "noturn")
+    if(currTime > (calibrationStartTime + (diffTime * 7 ))\
+            and calibrationVariables["previousDirection"] == "forward2"):
+        calibrationVariables["previousDirection"] = "backward2"
+        calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
+        calibrateMovement("backward", "noturn")
+    if (currTime > (calibrationStartTime + (diffTime * 8))\
+            and calibrationVariables["previousDirection"] == "backward2"):
+        calibrationMode = False
+
 def calibrateLatencyAndMovementValues(bBoxTrack):
-    global screenWidth, screenHeight, currentDirection, movementEndTime
-    global previousPos, videoLatency, stopPos, MSPerPixel_H
+    global screenWidth, screenHeight, calibrationVariables
+    global videoLatency, MSPerPixel_H, MSPerPixel_V
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     xMidPrev,yMidPrev = 0,0
     xMidStop,yMidStop = 0,0
-    if(len(previousPos)>0):
-        xMidPrev,yMidPrev = previousPos[0]+(previousPos[2]/2),previousPos[1]+(previousPos[3]/2)
-    if(len(stopPos) > 0):
-         xMidStop,yMidStop = stopPos[0]+(stopPos[2]/2),stopPos[1]+(stopPos[3]/2)
-    screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
-    if(len(previousPos) > 0 and abs(xMidPrev-xMid) > 1):
-        print("Diff ",abs(xMidPrev-xMid),currentDirection)
-    if(currentDirection == "stop" and len(previousPos) > 0):
-        print("Current Pos after stop",xMid,yMid)
-        if(abs(xMidPrev-xMid) < 5 and movementEndTime > 0):
-#             videoLatency = (time.time() - movementEndTime)
-            print("Latency ", round((time.time() - movementEndTime),2))
-            if(len(stopPos) > 0 and (stopPos[0]-xMid) > 0):
-                diffPixel = abs(stopPos[0]-xMid)
-                print("pixel diff " , diffPixel)
-#                 MSPerPixel_H = (MSPerPixel_H + (videoLatency/diffPixel))/2
-                print("pixeltomillisecondcount" , MSPerPixel_H, (videoLatency/diffPixel))
+    currHeight,currWidth = bBoxTrack[2],bBoxTrack[3]
+    heightPrev = 0
+    heightStop = 0
+    if("ward" in calibrationVariables["previousDirection"]):
+        if(len(calibrationVariables["previousPos"])>0):
+            xHeightPrev = calibrationVariables["previousPos"][2]
+        if(len(calibrationVariables["stopPos"]) > 0):
+            heightStop = calibrationVariables["stopPos"][2]
+        if(len(calibrationVariables["previousPos"]) > 0 and abs(xMidPrev-currHeight) > 1):
+            print("Diff ",abs(heightPrev-currHeight),currentDirection)
+        if(calibrationVariables["currentDirection"] == "stop" and len(calibrationVariables["previousPos"]) > 0):
+            print("Current Pos after stop",currHeight,currWidth)
+            if(abs(heightPrev-currHeight) < 5 and calibrationVariables["movementEndTime"] > 0):
+                videoLatency = (videoLatency + (time.time() - calibrationVariables["movementEndTime"]))/2
+                print("Latency ", round((time.time() - calibrationVariables["movementEndTime"]),2))
+                if(len(calibrationVariables["stopPos"]) > 0 and (heightStop-currHeight) > 0):
+                    diffPixel = abs(heightStop-currHeight)
+                    print("pixel diff " , diffPixel)
+                    MSPerPixel_V = (MSPerPixel_V + (videoLatency/diffPixel))/2
+                    print("pixeltomillisecondcount" , MSPerPixel_V, (videoLatency/diffPixel))
+    else:
+        if(len(calibrationVariables["previousPos"])>0):
+            xMidPrev,yMidPrev = calibrationVariables["previousPos"][0]+(calibrationVariables["previousPos"][2]/2),\
+                                calibrationVariables["previousPos"][1]+(calibrationVariables["previousPos"][3]/2)
+        if(len(calibrationVariables["stopPos"]) > 0):
+            xMidStop = calibrationVariables["stopPos"][0]+(calibrationVariables["stopPos"][2]/2)
+            yMidStop = calibrationVariables["stopPos"][1]+(calibrationVariables["stopPos"][3]/2)
+        screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
+        if(len(calibrationVariables["previousPos"]) > 0 and abs(xMidPrev-xMid) > 1):
+            print("Diff ",abs(xMidPrev-xMid),currentDirection)
+        if(calibrationVariables["currentDirection"] == "stop" and len(calibrationVariables["previousPos"]) > 0):
+            print("Current Pos after stop",xMid,yMid)
+            if(abs(xMidPrev-xMid) < 10 and calibrationVariables["movementEndTime"] > 0):
+                videoLatency = (videoLatency + (time.time() - calibrationVariables["movementEndTime"]))/2
+                print("Latency ", round((time.time() - calibrationVariables["movementEndTime"]),2))
+                if(len(calibrationVariables["stopPos"]) > 0 and (xMidStopxMidStop-xMid) > 0):
+                    diffPixel = abs(xMidStop-xMid)
+                    print("pixel diff " , diffPixel)
+                    MSPerPixel_H = (MSPerPixel_H + (videoLatency/diffPixel))/2
+                    print("pixeltomillisecondcount" , MSPerPixel_H, (videoLatency/diffPixel))
 
 def getRobotMovementDetails(bBoxTrack):
     global screenWidth, screenHeight, currentDirection, movementEndTime, prevDirection
@@ -115,7 +232,6 @@ def getRobotMovementDetails(bBoxTrack):
     xMid,yMid = bBoxTrack[0]+(bBoxTrack[2]/2),bBoxTrack[1]+(bBoxTrack[3]/2)
     objectHeight,objectWidth = bBoxTrack[2],bBoxTrack[3]
     screenCenterX,screenCenterY = screenWidth/2,screenHeight/2
-    calibrateLatencyAndMovementValues(bBoxTrack)
     previousPos = bBoxTrack[:]
     xMidGroundTruth, yMidGroundTruth = xMid,yMid
     objectGroundTruthHeight, objectGroundTruthWidth = objectHeight,objectWidth
@@ -128,8 +244,7 @@ def getRobotMovementDetails(bBoxTrack):
         objectGroundTruthHeight += pixelPerFrame_V
     elif(currentDirection == "backward"):
         objectGroundTruthHeight += pixelPerFrame_V
-    elif(currentDirection == "stop" and \
-    (movementEndTime + videoLatency) > time.time()):
+    elif(currentDirection == "stop" and (movementEndTime + videoLatency) > time.time()):
         if(prevDirection == "left"):
             xMidGroundTruth += ( (1/MSPerPixel_H) * (time.time() - movementEndTime) )
         elif(prevDirection == "right"):
@@ -243,6 +358,7 @@ def trackSubjectUsingRobot(bBoxTrack):
 
 def gen_frames(toDetect):
     global frame, conditionObj, GUIMode, camera, tracker, currentDirection, previousPos
+    global calibrationMode
     objectFound             = False
     resetTracking           = True
     bBoxTrack               = None
@@ -256,27 +372,33 @@ def gen_frames(toDetect):
         bBoxTrack = bBoxDetect
         print("Object Found ",objectFound)
         print("Object Location ",bBoxDetect)
-        if(objectFound):
-            trackSubjectUsingRobot(bBoxDetect)
-        elif(currentDirection != "stop"):
-            emergencyStop()
-        if(GUIMode):
-            img_array = jetson.utils.cudaToNumpy(img)
-            cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
-                        cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
-            cv2.putText(img_array,'BBOX Track: '+str(bBoxTrack), (10,600), \
-                        cv2.FONT_HERSHEY_SIMPLEX,0.4,(255,255,255),2)
-            cv2.putText(img_array,'BBOX Detect: '+str(bBoxDetect), (10,550), \
-                        cv2.FONT_HERSHEY_SIMPLEX,0.4,(255,255,255),2)
-            ret, buffer = cv2.imencode('.jpg', img_array)
-            frame = buffer.tobytes()
-            with conditionObj:
-                conditionObj.notifyAll()
+        if(calibrationMode):
+            if(objectFound):
+                calibrateLatencyAndMovementValues(bBoxDetect,time.time())
+            else:
+                calibrationStartTime = 0
         else:
-            new_frame_time = time.time()
-            fps = 1/(new_frame_time-prev_frame_time)
-            prev_frame_time = new_frame_time
-            printStatus("FPS "+str(fps))
+            if(objectFound):
+                trackSubjectUsingRobot(bBoxDetect)
+            elif(currentDirection != "stop"):
+                emergencyStop()
+            if(GUIMode):
+                img_array = jetson.utils.cudaToNumpy(img)
+                cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), (10,650), \
+                            cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
+                cv2.putText(img_array,'BBOX Track: '+str(bBoxTrack), (10,600), \
+                            cv2.FONT_HERSHEY_SIMPLEX,0.4,(255,255,255),2)
+                cv2.putText(img_array,'BBOX Detect: '+str(bBoxDetect), (10,550), \
+                            cv2.FONT_HERSHEY_SIMPLEX,0.4,(255,255,255),2)
+                ret, buffer = cv2.imencode('.jpg', img_array)
+                frame = buffer.tobytes()
+                with conditionObj:
+                    conditionObj.notifyAll()
+            else:
+                new_frame_time = time.time()
+                fps = 1/(new_frame_time-prev_frame_time)
+                prev_frame_time = new_frame_time
+                printStatus("FPS "+str(fps))
 
 def getFrames():
     global frame, conditionObj
