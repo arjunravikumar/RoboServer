@@ -139,42 +139,42 @@ def calibration(bBoxTrack,currTime):
         calibrationStartTime = currTime
         calibrationVariables["previousDirection"] = "left1"
         calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
-        calibrateMovement("turn", "left")
+        calibrateMovement("turn", "left" , 0.1)
     if(currTime > (calibrationStartTime + diffTime) \
             and calibrationVariables["previousDirection"] == "left1"):
         calibrationVariables["previousDirection"] = "right1"
         calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
-        calibrateMovement("turn", "right")
+        calibrateMovement("turn", "right", 0.1)
     if(currTime > (calibrationStartTime + (diffTime * 2 ))\
             and calibrationVariables["previousDirection"] == "right1"):
         calibrationVariables["previousDirection"] = "right2"
         calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
-        calibrateMovement("turn", "right")
+        calibrateMovement("turn", "right", 0.1)
     if(currTime > (calibrationStartTime + (diffTime * 3 ))\
             and calibrationVariables["previousDirection"] == "right2"):
         calibrationVariables["previousDirection"] = "left2"
         calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
-        calibrateMovement("turn", "left")
+        calibrateMovement("turn", "left", 0.1)
     if(currTime > (calibrationStartTime + (diffTime * 4 ))\
             and calibrationVariables["previousDirection"] == "left2"):
         calibrationVariables["previousDirection"] = "forward1"
         calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
-        calibrateMovement("forward", "noturn")
+        calibrateMovement("forward", "noturn", 0.5)
     if(currTime > (calibrationStartTime + (diffTime * 5 ))\
             and calibrationVariables["previousDirection"] == "forward1"):
         calibrationVariables["previousDirection"] = "backward1"
         calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
-        calibrateMovement("backward", "noturn")
+        calibrateMovement("backward", "noturn", 0.5)
     if(currTime > (calibrationStartTime + (diffTime * 6 ))\
             and calibrationVariables["previousDirection"] == "backward1"):
         calibrationVariables["previousDirection"] = "forward2"
         calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
-        calibrateMovement("forward", "noturn")
+        calibrateMovement("forward", "noturn", 0.5)
     if(currTime > (calibrationStartTime + (diffTime * 7 ))\
             and calibrationVariables["previousDirection"] == "forward2"):
         calibrationVariables["previousDirection"] = "backward2"
         calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
-        calibrateMovement("backward", "noturn")
+        calibrateMovement("backward", "noturn", 0.5)
     if (currTime > (calibrationStartTime + (diffTime * 8))\
             and calibrationVariables["previousDirection"] == "backward2"):
         calibrationMode = False
