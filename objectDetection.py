@@ -125,6 +125,7 @@ def stopCalibrationMovement():
     messageToSend["requestTime"] = time.time()
     messageToSend["latency"] = videoLatency
     messageToSend["MSPerPixel_H"] = MSPerPixel_H
+    messageToSend["MSPerPixel_V"] = MSPerPixel_V
     calibrationVariables["currentDirection"] = "stop"
     calibrationVariables["stopPos"]
     robotControls.send(messageToSend)
@@ -287,7 +288,7 @@ def getRobotMovementDetails(bBoxTrack):
     return startMovement, stopIn, xMidGroundTruth, xMid
 
 def moveRobot(bBoxTrack):
-    global currentDirection, videoLatency, MSPerPixel_H
+    global currentDirection, videoLatency, MSPerPixel_H, MSPerPixel_V
     printStatus("bBoxTrack "+str(bBoxTrack))
     startMovement, stopIn, xMidGroundTruth, xMid = getRobotMovementDetails(bBoxTrack)
     messageToSend = {}
@@ -301,6 +302,7 @@ def moveRobot(bBoxTrack):
     messageToSend["xMidGroundTruth"] = xMidGroundTruth
     messageToSend["stopIn"] = stopIn
     messageToSend["MSPerPixel_H"] = MSPerPixel_H
+    messageToSend["MSPerPixel_V"] = MSPerPixel_V
     messageToSend["turn"] = currentDirection
     if(startMovement == True):
         start_time = threading.Timer(stopIn,stopOnCenter)
@@ -325,6 +327,8 @@ def stopOnCenter():
     messageToSend["turn"] = ""
     messageToSend["requestTime"] = time.time()
     messageToSend["latency"] = videoLatency
+    messageToSend["MSPerPixel_H"] = MSPerPixel_H
+    messageToSend["MSPerPixel_V"] = MSPerPixel_V
     prevDirection = currentDirection
     currentDirection = "stop"
     robotControls.send(messageToSend)
