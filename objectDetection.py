@@ -378,7 +378,7 @@ def gen_frames(toDetect):
         print("Object Location ",bBoxDetect)
         if(calibrationMode):
             if(objectFound):
-                calibrateLatencyAndMovementValues(bBoxDetect,time.time())
+                calibration(bBoxDetect,time.time())
             else:
                 calibrationStartTime = 0
         else:
