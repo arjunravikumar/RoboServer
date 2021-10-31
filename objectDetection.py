@@ -131,7 +131,7 @@ def stopCalibrationMovement():
 
 def calibration(bBoxTrack,currTime):
     global calibrationMode, calibrationStartTime, calibrationVariables
-    diffTime = 3
+    diffTime = 1
     calibrateLatencyAndMovementValues(bBoxTrack)
     calibrationVariables["previousPos"] = bBoxTrack[:]
     if(calibrationStartTime == 0):
