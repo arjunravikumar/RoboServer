@@ -161,22 +161,22 @@ def calibration(bBoxTrack,currTime):
             and calibrationVariables["previousDirection"] == "left2"):
         calibrationVariables["previousDirection"] = "forward1"
         calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
-        calibrateMovement("forward", "noturn", 0.5)
+        calibrateMovement("forward", "noturn", 0.1)
     elif(currTime > (calibrationStartTime + (diffTime * 6 ))\
             and calibrationVariables["previousDirection"] == "forward1"):
         calibrationVariables["previousDirection"] = "backward1"
         calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
-        calibrateMovement("backward", "noturn", 0.5)
+        calibrateMovement("backward", "noturn", 0.1)
     elif(currTime > (calibrationStartTime + (diffTime * 7 ))\
             and calibrationVariables["previousDirection"] == "backward1"):
         calibrationVariables["previousDirection"] = "forward2"
         calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
-        calibrateMovement("forward", "noturn", 0.5)
+        calibrateMovement("forward", "noturn", 0.1)
     elif(currTime > (calibrationStartTime + (diffTime * 8 ))\
             and calibrationVariables["previousDirection"] == "forward2"):
         calibrationVariables["previousDirection"] = "backward2"
         calibrationVariables["currentDirection"] = calibrationVariables["previousDirection"][:-1]
-        calibrateMovement("backward", "noturn", 0.5)
+        calibrateMovement("backward", "noturn", 0.1)
     elif (currTime > (calibrationStartTime + (diffTime * 9 ))\
             and calibrationVariables["previousDirection"] == "backward2"):
         calibrationMode = False
