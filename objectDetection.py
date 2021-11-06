@@ -26,8 +26,8 @@ currentDirection = "stop"
 prevDirection = "stop"
 movementEndTime = 0
 previousPos = []
-MSPerPixel_H = 0.0004
-MSPerPixel_V = 0.5
+MSPerPixel_H = 0.0002
+MSPerPixel_V = 0.001
 stopPos = []
 pixelPerFrame_H = 60
 pixelPerFrame_V = 10
@@ -127,6 +127,7 @@ def stopCalibrationMovement():
     messageToSend["MSPerPixel_V"] = MSPerPixel_V
     calibrationVariables["currentDirection"] = "stop"
     calibrationVariables["stopPos"] = calibrationVariables["previousPos"]
+    calibrationVariables["movementEndTime"] = time.time()
     robotControls.send(messageToSend)
 
 def calibration(bBoxTrack,currTime):
