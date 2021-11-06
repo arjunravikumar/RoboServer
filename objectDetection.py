@@ -190,6 +190,7 @@ def calibrateLatencyAndMovementValues(bBoxTrack):
     currHeight,currWidth = bBoxTrack[2],bBoxTrack[3]
     heightPrev = 0
     heightStop = 0
+    print(calibrationVariables)
     if("ward" in calibrationVariables["previousDirection"]):
         if(len(calibrationVariables["previousPos"])>0):
             xHeightPrev = calibrationVariables["previousPos"][2]
