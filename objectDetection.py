@@ -27,7 +27,7 @@ prevDirection = "stop"
 movementEndTime = 0
 previousPos = []
 MSPerPixel_H = 0.0002
-MSPerPixel_V = 0.001
+MSPerPixel_V = 0.01
 stopPos = []
 pixelPerFrame_H = 60
 pixelPerFrame_V = 10
@@ -132,7 +132,7 @@ def stopCalibrationMovement():
 
 def calibration(bBoxTrack,currTime):
     global calibrationMode, calibrationStartTime, calibrationVariables
-    diffTime = 1
+    diffTime = 3
     calibrateLatencyAndMovementValues(bBoxTrack)
     calibrationVariables["previousPos"] = bBoxTrack[:]
     if(calibrationStartTime == 0):
