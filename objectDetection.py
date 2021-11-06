@@ -204,6 +204,7 @@ def calibrateLatencyAndMovementValues(bBoxTrack):
             if(abs(heightPrev-currHeight) < 5 and calibrationVariables["movementEndTime"] > 0):
                 videoLatency = (videoLatency + (time.time() - calibrationVariables["movementEndTime"]))/2
                 print("Latency ", round((time.time() - calibrationVariables["movementEndTime"]),2))
+                calibrationVariables["movementEndTime"] = 0
                 if(len(calibrationVariables["stopPos"]) > 0 and (heightStop-currHeight) > 0):
                     diffPixel = abs(heightStop-currHeight)
                     print("pixel diff " , diffPixel)
@@ -224,6 +225,7 @@ def calibrateLatencyAndMovementValues(bBoxTrack):
             if(abs(xMidPrev-xMid) < 10 and calibrationVariables["movementEndTime"] > 0):
                 videoLatency = (videoLatency + (time.time() - calibrationVariables["movementEndTime"]))/2
                 print("Latency ", round((time.time() - calibrationVariables["movementEndTime"]),2))
+                calibrationVariables["movementEndTime"] = 0
                 if(len(calibrationVariables["stopPos"]) > 0 and (xMidStop-xMid) > 0):
                     diffPixel = abs(xMidStop-xMid)
                     print("pixel diff " , diffPixel)
