@@ -126,7 +126,7 @@ def stopCalibrationMovement():
     messageToSend["MSPerPixel_H"] = MSPerPixel_H
     messageToSend["MSPerPixel_V"] = MSPerPixel_V
     calibrationVariables["currentDirection"] = "stop"
-    calibrationVariables["stopPos"]
+    calibrationVariables["stopPos"] = calibrationVariables["previousPos"]
     robotControls.send(messageToSend)
 
 def calibration(bBoxTrack,currTime):
