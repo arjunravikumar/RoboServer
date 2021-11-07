@@ -382,8 +382,8 @@ def gen_frames(toDetect):
         if(calibrationMode):
             if(objectFound):
                 calibration(bBoxDetect,time.time())
-            else:
-                calibrationStartTime = 0
+            # else:
+            #     calibrationStartTime = 0
         else:
             if(objectFound):
                 trackSubjectUsingRobot(bBoxDetect)
