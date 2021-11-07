@@ -106,7 +106,7 @@ def calibrateMovement(direction,turn,stopIn):
     start_time = threading.Timer(stopIn,stopCalibrationMovement)
     start_time.start()
 
-def stopCalibrationMovement():
+def stopCalibrationMovement(initialCall = False):
     global robotControls, videoLatency, MSPerPixel_H
     global calibrationVariables
     messageToSend = {}
@@ -122,9 +122,10 @@ def stopCalibrationMovement():
     messageToSend["latency"] = videoLatency
     messageToSend["MSPerPixel_H"] = MSPerPixel_H
     messageToSend["MSPerPixel_V"] = MSPerPixel_V
-    calibrationVariables["currentDirection"] = "stop"
-    calibrationVariables["stopPos"] = calibrationVariables["previousPos"]
-    calibrationVariables["movementEndTime"] = time.time()
+    if(initialCall == False):
+        calibrationVariables["currentDirection"] = "stop"
+        calibrationVariables["stopPos"] = calibrationVariables["previousPos"]
+        calibrationVariables["movementEndTime"] = time.time()
     robotControls.send(messageToSend)
 
 def calibration(bBoxTrack,currTime):
@@ -134,7 +135,7 @@ def calibration(bBoxTrack,currTime):
     calibrationVariables["previousPos"] = bBoxTrack[:]
     if(calibrationStartTime == 0):
         calibrationStartTime = currTime
-        stopCalibrationMovement()
+        stopCalibrationMovement(True)
     elif(currTime > (calibrationStartTime + (diffTime * 1 )) \
             and calibrationVariables["previousDirection"] == "start"):
         calibrationVariables["previousDirection"] = "left1"
