@@ -35,6 +35,8 @@ calibrationMode = True
 calibrationStartTime = 0
 calibrationVariables = {"stopTime":0, "movementEndTime": 0, "stopPos" : [], "previousPos" :[],\
                         "currentDirection" :"", "previousDirection" : "start"}
+searchMode = True
+objectLostTime = 0
 
 def createNewTracker():
     global trackerType,tracker
@@ -87,6 +89,22 @@ def trackObject(img_array,toDetect):
 
 def printStatus(msg):
     print(msg,end = "\n")
+
+def searchMovment():
+    global robotControls, videoLatency, MSPerPixel_H
+    messageToSend = {}
+    messageToSend["reason"] = "Search Mode"
+    messageToSend["type"] = "mobility"
+    messageToSend["direction"] = "left"
+    messageToSend["speed"] = 60
+    messageToSend["rads"] = 0.5
+    messageToSend["turn"] = "left"
+    messageToSend["latency"] = videoLatency
+    messageToSend["stopIn"] = 0
+    messageToSend["MSPerPixel_H"] = MSPerPixel_H
+    messageToSend["MSPerPixel_V"] = MSPerPixel_V
+    messageToSend["requestTime"] = time.time()
+    robotControls.send(messageToSend)
 
 def calibrateMovement(direction,turn,stopIn):
     global robotControls, videoLatency, MSPerPixel_H
@@ -200,13 +218,13 @@ def calibrateLatencyAndMovementValues(bBoxTrack):
         if(calibrationVariables["currentDirection"] == "stop" and len(calibrationVariables["previousPos"]) > 0):
             print("Current Pos after stop",currHeight,currWidth)
             if(abs(heightPrev-currHeight) < 5 and calibrationVariables["movementEndTime"] > 0):
-                videoLatency = (videoLatency + (time.time() - calibrationVariables["movementEndTime"]))/2
+                # videoLatency = (videoLatency + (time.time() - calibrationVariables["movementEndTime"]))/2
                 print("Latency ", round((time.time() - calibrationVariables["movementEndTime"]),2))
                 calibrationVariables["movementEndTime"] = 0
                 if(len(calibrationVariables["stopPos"]) > 0 and (heightStop-currHeight) > 0):
                     diffPixel = abs(heightStop-currHeight)
                     print("pixel diff " , diffPixel)
-                    MSPerPixel_V = (MSPerPixel_V + (videoLatency/diffPixel))/2
+                    # MSPerPixel_V = (MSPerPixel_V + (videoLatency/diffPixel))/2
                     print("pixeltomillisecondcount" , MSPerPixel_V, (videoLatency/diffPixel))
     else:
         if(len(calibrationVariables["previousPos"])>0):
@@ -221,13 +239,13 @@ def calibrateLatencyAndMovementValues(bBoxTrack):
         if(calibrationVariables["currentDirection"] == "stop" and len(calibrationVariables["previousPos"]) > 0):
             print("Current Pos after stop",xMid,yMid)
             if(abs(xMidPrev-xMid) < 10 and calibrationVariables["movementEndTime"] > 0):
-                videoLatency = (videoLatency + (time.time() - calibrationVariables["movementEndTime"]))/2
+                # videoLatency = (videoLatency + (time.time() - calibrationVariables["movementEndTime"]))/2
                 print("Latency ", round((time.time() - calibrationVariables["movementEndTime"]),2))
                 calibrationVariables["movementEndTime"] = 0
                 if(len(calibrationVariables["stopPos"]) > 0 and (xMidStop-xMid) > 0):
                     diffPixel = abs(xMidStop-xMid)
                     print("pixel diff " , diffPixel)
-                    MSPerPixel_H = (MSPerPixel_H + (videoLatency/diffPixel))/2
+                    # MSPerPixel_H = (MSPerPixel_H + (videoLatency/diffPixel))/2
                     print("pixeltomillisecondcount" , MSPerPixel_H, (videoLatency/diffPixel))
 
 def getRobotMovementDetails(bBoxTrack):
@@ -366,7 +384,7 @@ def trackSubjectUsingRobot(bBoxTrack):
 
 def gen_frames(toDetect):
     global frame, conditionObj, GUIMode, camera, tracker, currentDirection, previousPos
-    global calibrationMode, calibrationStartTime
+    global calibrationMode, calibrationStartTime, searchMode
     objectFound             = False
     resetTracking           = True
     bBoxTrack               = None
@@ -380,6 +398,20 @@ def gen_frames(toDetect):
         bBoxTrack = bBoxDetect
         print("Object Found ",objectFound)
         print("Object Location ",bBoxDetect)
+        if(objectFound == False and searchMode == False):
+            if(objectLostTime == 0):
+                searchMode = False
+                objectLostTime = time.time()
+            elif(time.time() - objectLostTime > 5):
+                searchMode = True
+                objectLostTime = 0
+        if(objectFound == True and searchMode == True):
+            searchMode = False
+            objectLostTime = 0
+            emergencyStop()
+        if(searchMode):
+            searchMovment()
+            searchMode = False
         if(calibrationMode):
             if(objectFound):
                 calibration(bBoxDetect,time.time())
