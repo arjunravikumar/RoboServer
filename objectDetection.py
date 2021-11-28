@@ -37,6 +37,7 @@ calibrationVariables = {"stopTime":0, "movementEndTime": 0, "stopPos" : [], "pre
                         "currentDirection" :"", "previousDirection" : "start"}
 searchMode = True
 objectLostTime = 0
+toDetect = ""
 
 def createNewTracker():
     global trackerType,tracker
@@ -90,7 +91,7 @@ def trackObject(img_array,toDetect):
 def printStatus(msg):
     print(msg,end = "\n")
 
-def searchMovment():
+def searchMovement():
     global robotControls, videoLatency, MSPerPixel_H
     messageToSend = {}
     messageToSend["reason"] = "Search Mode"
@@ -105,6 +106,27 @@ def searchMovment():
     messageToSend["MSPerPixel_V"] = MSPerPixel_V
     messageToSend["requestTime"] = time.time()
     robotControls.send(messageToSend)
+    start_time = threading.Timer(2,stopSearchMovement)
+    start_time.start()
+
+def stopSearchMovement():
+    global robotControls, videoLatency, MSPerPixel_H
+    global calibrationVariables,toDetect
+    messageToSend = {}
+    messageToSend["reason"] = "Searching Stop"
+    messageToSend["type"] = "mobility"
+    messageToSend["direction"] = "no"
+    messageToSend["speed"] = 100
+    messageToSend["rads"] = 0.5
+    printStatus("stop")
+    messageToSend["direction"] = "stop"
+    messageToSend["turn"] = ""
+    messageToSend["requestTime"] = time.time()
+    messageToSend["latency"] = videoLatency
+    messageToSend["MSPerPixel_H"] = MSPerPixel_H
+    messageToSend["MSPerPixel_V"] = MSPerPixel_V
+    robotControls.send(messageToSend)
+    toDetect = ""
 
 def calibrateMovement(direction,turn,stopIn):
     global robotControls, videoLatency, MSPerPixel_H
@@ -382,9 +404,9 @@ def trackSubjectUsingRobot(bBoxTrack):
         messageToSend["requestTime"] = time.time()
         robotControls.send(messageToSend)
 
-def gen_frames(toDetect):
+def gen_frames():
     global frame, conditionObj, GUIMode, camera, tracker, currentDirection, previousPos
-    global calibrationMode, calibrationStartTime, searchMode
+    global calibrationMode, calibrationStartTime, searchMode, toDetect
     objectFound             = False
     resetTracking           = True
     bBoxTrack               = None
@@ -393,6 +415,8 @@ def gen_frames(toDetect):
     new_frame_time          = 0
     prev_frame_time         = 0
     while True:
+        if(toDetect == ""):
+            toDetect = input("Enter the object to find")
         img = camera.Capture()
         objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
         bBoxTrack = bBoxDetect
@@ -410,7 +434,7 @@ def gen_frames(toDetect):
             objectLostTime = 0
             emergencyStop()
         if(searchMode):
-            searchMovment()
+            searchMovement()
             searchMode = False
         if(calibrationMode):
             if(objectFound):
@@ -479,7 +503,7 @@ initalisePreProcessingProcedure()
 conditionObj = threading.Condition()
 
 startWebSocket = threading.Thread(target=startWebSocketClient, name='startWebSocket')
-generateFrames = threading.Thread(target=gen_frames, name='generateFrames',args=("person",))
+generateFrames = threading.Thread(target=gen_frames, name='generateFrames')
 
 startWebSocket.start()
 generateFrames.start()
