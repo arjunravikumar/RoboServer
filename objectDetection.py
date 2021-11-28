@@ -417,8 +417,6 @@ def gen_frames():
     while True:
         if(toDetect == ""):
             toDetect = input("Enter the object to find")
-            print(toDetect)
-            return
         img = camera.Capture()
         objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
         bBoxTrack = bBoxDetect
