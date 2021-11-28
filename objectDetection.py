@@ -37,7 +37,7 @@ calibrationVariables = {"stopTime":0, "movementEndTime": 0, "stopPos" : [], "pre
                         "currentDirection" :"", "previousDirection" : "start"}
 searchMode = True
 objectLostTime = 0
-toDetect = "person"
+toDetect = ""
 
 def createNewTracker():
     global trackerType,tracker
@@ -126,7 +126,7 @@ def stopSearchMovement():
     messageToSend["MSPerPixel_H"] = MSPerPixel_H
     messageToSend["MSPerPixel_V"] = MSPerPixel_V
     robotControls.send(messageToSend)
-    toDetect = "startSearch"
+    toDetect = ""
 
 def calibrateMovement(direction,turn,stopIn):
     global robotControls, videoLatency, MSPerPixel_H
@@ -415,7 +415,7 @@ def gen_frames():
     new_frame_time          = 0
     prev_frame_time         = 0
     while True:
-        if(toDetect == "startSearch"):
+        if(toDetect == ""):
             toDetect = input("Enter the object to find")
             print(toDetect)
             return
