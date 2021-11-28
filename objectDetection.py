@@ -37,7 +37,7 @@ calibrationVariables = {"stopTime":0, "movementEndTime": 0, "stopPos" : [], "pre
                         "currentDirection" :"", "previousDirection" : "start"}
 searchMode = True
 objectLostTime = 0
-toDetect = ""
+toDetect = "person"
 
 def createNewTracker():
     global trackerType,tracker
@@ -106,7 +106,7 @@ def searchMovement():
     messageToSend["MSPerPixel_V"] = MSPerPixel_V
     messageToSend["requestTime"] = time.time()
     robotControls.send(messageToSend)
-    start_time = threading.Timer(2,stopSearchMovement)
+    start_time = threading.Timer(10,stopSearchMovement)
     start_time.start()
 
 def stopSearchMovement():
