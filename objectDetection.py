@@ -126,7 +126,7 @@ def stopSearchMovement():
     messageToSend["MSPerPixel_H"] = MSPerPixel_H
     messageToSend["MSPerPixel_V"] = MSPerPixel_V
     robotControls.send(messageToSend)
-    toDetect = ""
+    toDetect = "startSearch"
 
 def calibrateMovement(direction,turn,stopIn):
     global robotControls, videoLatency, MSPerPixel_H
@@ -415,8 +415,10 @@ def gen_frames():
     new_frame_time          = 0
     prev_frame_time         = 0
     while True:
-        if(toDetect == ""):
+        if(toDetect == "startSearch"):
             toDetect = input("Enter the object to find")
+            print(toDetect)
+            return
         img = camera.Capture()
         objectFound, bBoxDetect, img = getDesiredObjectFromFrame(toDetect,img)
         bBoxTrack = bBoxDetect
