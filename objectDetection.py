@@ -38,6 +38,7 @@ calibrationVariables = {"stopTime":0, "movementEndTime": 0, "stopPos" : [], "pre
 objectFound = False
 objectLostTime = 0
 toDetect = ""
+searchMode = True
 
 def createNewTracker():
     global trackerType,tracker
