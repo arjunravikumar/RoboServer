@@ -415,6 +415,7 @@ def gen_frames():
     new_frame_time          = 0
     prev_frame_time         = 0
     while True:
+        print(toDetect)
         if(toDetect == ""):
             toDetect = input("Enter the object to find")
         img = camera.Capture()
