@@ -406,7 +406,7 @@ def trackSubjectUsingRobot(bBoxTrack):
 
 def gen_frames():
     global frame, conditionObj, GUIMode, camera, tracker, currentDirection, previousPos
-    global calibrationMode, calibrationStartTime, searchMode, toDetect
+    global calibrationMode, calibrationStartTime, searchMode, toDetect, objectLostTime
     objectFound             = False
     resetTracking           = True
     bBoxTrack               = None
