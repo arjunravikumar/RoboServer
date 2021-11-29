@@ -38,7 +38,7 @@ calibrationVariables = {"stopTime":0, "movementEndTime": 0, "stopPos" : [], "pre
 objectFound = False
 objectLostTime = 0
 toDetect = ""
-searchMode = True
+searchMode = 1
 
 def createNewTracker():
     global trackerType,tracker
@@ -113,7 +113,7 @@ def searchMovement():
 def stopSearchMovement():
     global robotControls, videoLatency, MSPerPixel_H
     global calibrationVariables,toDetect,objectFound, searchMode
-    if(objectFound == True and searchMode == True):
+    if(objectFound == True and searchMode == 0):
         return
     messageToSend = {}
     messageToSend["reason"] = "Searching Stop"
@@ -130,7 +130,7 @@ def stopSearchMovement():
     messageToSend["MSPerPixel_V"] = MSPerPixel_V
     robotControls.send(messageToSend)
     toDetect = ""
-    searchMode = False
+    searchMode = -1
 
 def calibrateMovement(direction,turn,stopIn):
     global robotControls, videoLatency, MSPerPixel_H
@@ -427,21 +427,22 @@ def gen_frames():
         bBoxTrack = bBoxDetect
         print("Object Found ",objectFound)
         print("Object Location ",bBoxDetect)
-        if(objectFound == False and searchMode == False):
+        if(objectFound == False and searchMode == -1):
             if(objectLostTime == 0):
                 objectLostTime = time.time()
             elif(time.time() - objectLostTime > 5):
                 toDetect = ""
-                searchMode = True
+                searchMode = 1
                 objectLostTime = 0
         if(objectFound == True):
-            if (searchMode == True):
+            if (searchMode == 1):
                 calibrationMode = False
-                searchMode = False
+                searchMode = -1
                 objectLostTime = 0
                 emergencyStop()
-        if(searchMode and toDetect != ""):
+        if(searchMode == 1 and toDetect != ""):
             searchMovement()
+            searchMode = 0
         if(calibrationMode):
             if(objectFound):
                 calibration(bBoxDetect,time.time())
