@@ -106,12 +106,14 @@ def searchMovement():
     messageToSend["MSPerPixel_V"] = MSPerPixel_V
     messageToSend["requestTime"] = time.time()
     robotControls.send(messageToSend)
-    start_time = threading.Timer(10,stopSearchMovement)
+    start_time = threading.Timer(5,stopSearchMovement)
     start_time.start()
 
 def stopSearchMovement():
     global robotControls, videoLatency, MSPerPixel_H
-    global calibrationVariables,toDetect
+    global calibrationVariables,toDetect,searchMode
+    if(searchMode == False):
+        return
     messageToSend = {}
     messageToSend["reason"] = "Searching Stop"
     messageToSend["type"] = "mobility"
@@ -415,7 +417,7 @@ def gen_frames():
     new_frame_time          = 0
     prev_frame_time         = 0
     while True:
-        print(toDetect)
+        print(toDetect,objectLostTime)
         if(toDetect == ""):
             toDetect = input("Enter the object to find")
         img = camera.Capture()
@@ -430,7 +432,7 @@ def gen_frames():
             elif(time.time() - objectLostTime > 5):
                 searchMode = True
                 objectLostTime = 0
-        if(objectFound == True and searchMode == True):
+        if(objectFound == True):
             searchMode = False
             objectLostTime = 0
             emergencyStop()
