@@ -430,13 +430,16 @@ def gen_frames():
                 searchMode = False
                 objectLostTime = time.time()
             elif(time.time() - objectLostTime > 5):
+                toDetect = ""
                 searchMode = True
                 objectLostTime = 0
         if(objectFound == True):
-            searchMode = False
-            objectLostTime = 0
-            emergencyStop()
-        if(searchMode):
+            if (searchMode == True):
+                calibrationMode = False
+                searchMode = False
+                objectLostTime = 0
+                emergencyStop()
+        if(searchMode and toDetect != ""):
             searchMovement()
             searchMode = False
         if(calibrationMode):
