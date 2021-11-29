@@ -35,7 +35,7 @@ calibrationMode = True
 calibrationStartTime = 0
 calibrationVariables = {"stopTime":0, "movementEndTime": 0, "stopPos" : [], "previousPos" :[],\
                         "currentDirection" :"", "previousDirection" : "start"}
-searchMode = True
+objectFound = False
 objectLostTime = 0
 toDetect = ""
 
@@ -111,8 +111,8 @@ def searchMovement():
 
 def stopSearchMovement():
     global robotControls, videoLatency, MSPerPixel_H
-    global calibrationVariables,toDetect,searchMode
-    if(searchMode == False):
+    global calibrationVariables,toDetect,objectFound
+    if(objectFound == True):
         return
     messageToSend = {}
     messageToSend["reason"] = "Searching Stop"
@@ -409,7 +409,7 @@ def trackSubjectUsingRobot(bBoxTrack):
 def gen_frames():
     global frame, conditionObj, GUIMode, camera, tracker, currentDirection, previousPos
     global calibrationMode, calibrationStartTime, searchMode, toDetect, objectLostTime
-    objectFound             = False
+    global objectFound
     resetTracking           = True
     bBoxTrack               = None
     bBoxDetect              = None
