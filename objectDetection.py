@@ -112,8 +112,8 @@ def searchMovement():
 
 def stopSearchMovement():
     global robotControls, videoLatency, MSPerPixel_H
-    global calibrationVariables,toDetect,objectFound
-    if(objectFound == True):
+    global calibrationVariables,toDetect,objectFound, searchMode
+    if(objectFound == True and searchMode == True):
         return
     messageToSend = {}
     messageToSend["reason"] = "Searching Stop"
@@ -130,6 +130,7 @@ def stopSearchMovement():
     messageToSend["MSPerPixel_V"] = MSPerPixel_V
     robotControls.send(messageToSend)
     toDetect = ""
+    searchMode = False
 
 def calibrateMovement(direction,turn,stopIn):
     global robotControls, videoLatency, MSPerPixel_H
@@ -428,7 +429,6 @@ def gen_frames():
         print("Object Location ",bBoxDetect)
         if(objectFound == False and searchMode == False):
             if(objectLostTime == 0):
-                searchMode = False
                 objectLostTime = time.time()
             elif(time.time() - objectLostTime > 5):
                 toDetect = ""
@@ -442,7 +442,6 @@ def gen_frames():
                 emergencyStop()
         if(searchMode and toDetect != ""):
             searchMovement()
-            searchMode = False
         if(calibrationMode):
             if(objectFound):
                 calibration(bBoxDetect,time.time())
