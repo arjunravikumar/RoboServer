@@ -97,7 +97,7 @@ def searchMovement():
     messageToSend["reason"] = "Search Mode"
     messageToSend["type"] = "mobility"
     messageToSend["direction"] = "left"
-    messageToSend["speed"] = 60
+    messageToSend["speed"] = 40
     messageToSend["rads"] = 0.5
     messageToSend["turn"] = "left"
     messageToSend["latency"] = videoLatency
