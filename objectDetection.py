@@ -113,7 +113,7 @@ def searchMovement():
 def stopSearchMovement():
     global robotControls, videoLatency, MSPerPixel_H
     global calibrationVariables,toDetect,objectFound, searchMode
-    if(objectFound == True and searchMode == 0):
+    if(objectFound == True or searchMode != 0):
         return
     messageToSend = {}
     messageToSend["reason"] = "Searching Stop"
