@@ -12,7 +12,7 @@ import asyncio
 app = Flask(__name__)
 
 net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.5)
-camera = jetson.utils.videoSource("rtsp://192.168.1.103:8554/unicast")
+camera = jetson.utils.videoSource("rtsp://192.168.1.166:8554/unicast")
 trackerType = 'MOSSE'
 tracker = None
 labelClasses = {}
