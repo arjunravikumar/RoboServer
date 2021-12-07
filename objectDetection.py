@@ -21,7 +21,7 @@ def gen_frames():
         fontScale              = 1
         fontColor              = (255,255,255)
         lineType               = 2
-        cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
+        cv2.putText(img_array,'FPS: '+str(net.GetNetworkFPS()-3), bottomLeftCornerOfText, font,fontScale,fontColor,lineType)
         ret, buffer = cv2.imencode('.jpg', img_array)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
